@@ -1,0 +1,51 @@
+
+{% extends 'case_log/base.html' %}
+
+{% block content %}
+  <h1>Add Worker</h1>
+
+  <form method="POST" action="{% url 'caselog-addworker' %}">
+    {% csrf_token %}
+  <div class="form-group">
+    <input type="text" class="form-control"  aria-describedby="emailHelp" placeholder="First Name" name="first_name" value="{{ first_name }}">
+  </div>
+
+  <div class="form-group">
+    <input type="text" class="form-control" aria-describedby="emailHelp" placeholder="Last Name" name="last_name" value="{{ last_name }}">
+  </div>
+
+  <div class="form-group">
+    <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Login Email Address" name="login_email" value="{{ login_email }}">
+  </div>
+
+  <div class="form-group">
+    <input type="password" class="form-control" placeholder="Login Password" name="login_password" value="{{ login_password }}">
+  </div>
+
+  <div class="form-group">
+    <input type="text" class="form-control" aria-describedby="emailHelp" placeholder="Age" name="age" value="{{ age }}">
+  </div>
+
+
+  <div class="form-group">
+    <select class="custom-select" placeholder="Gender" name="gender_id">
+      <option selected >Select Gender</option>
+      {% for x in genders %}
+      <option value="{{x.0}}">{{x.1}}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="form-group">
+    <select class="custom-select" placeholder="Job Title" name="job_title_id">
+      <option selected>Select Job Title</option>
+      {% for x in jobTitles %}
+      <option value="{{x.0}}">{{x.1}}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <button type="Sign up" class="btn btn-secondary">Add Worker</button>
+</form>
+
+{% endblock %}
