@@ -1,0 +1,44 @@
+
+{% extends 'case_log/base.html' %}
+
+{% block content %}
+  <h1>Add Case</h1>
+
+  <form method="POST" action="{% url 'caselog-addcase' %}">
+    {% csrf_token %}
+    <div class="form-group">
+      <input type="text" class="form-control"  aria-describedby="emailHelp" placeholder="File Number" name="file_number" value="{{ file_number }}">
+    </div>
+
+
+    <div class="form-group">
+      <select class="custom-select" placeholder="Month" name="month_id">
+        <option selected >Select Month</option>
+        {% for x in months %}
+        <option value="{{x.0}}">{{x.1}}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <select class="custom-select" placeholder="PSW Name" name="worker_id">
+        <option selected >Select PSW</option>
+        {% for x in workers %}
+        <option value="{{x.0}}">{{x.8}}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <select class="custom-select" placeholder="PSW Name" name="case_status_id">
+        <option selected >Select Case Status</option>
+        {% for x in cases_statuses %}
+        <option value="{{x.0}}">{{x.1}}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <button type="Sign up" class="btn btn-secondary">Add Case</button>
+</form>
+
+{% endblock %}
