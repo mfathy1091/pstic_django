@@ -8,4 +8,5 @@ urlpatterns = [
      path('cases', views.cases, name='caselog-cases'),
      path('addcase', views.add_case, name='caselog-addcase'),
      path('beneficiaries', views.beneficiaries, name='caselog-beneficiaries'),
+     path('case/<int:pk>', views.case_detail, name='case-detail'),
 ]

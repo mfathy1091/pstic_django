@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect
-from .models import workers, genders
+from .models import workers, genders, cases
 from django.db import connection
 from .forms import WorkerForm, CaseForm
 from django.contrib import messages
+
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 # Queries
 
@@ -52,6 +54,7 @@ query_months = "SELECT * FROM case_log_months"
 query_case_statuses = "SELECT * FROM case_log_case_statuses"
 
 
+
 def getResultSet(query):
     cursor = connection.cursor()
     cursor.execute(query)
@@ -66,9 +69,31 @@ def workers(request):
 
 
 def cases(request):
+    query_beneficiaries_per_case = "SELECT \
+        b.id, \
+        b.full_name, \
+        b.age, \
+        c.file_number, \
+        g.gender_type, \
+        bs.beneficiary_status \
+    FROM case_log_beneficiaries b \
+    JOIN case_log_beneficiary_statuses bs ON b.beneficiary_status_id_id = bs.id \
+    JOIN case_log_genders g ON b.gender_id_id = g.id \
+    JOIN case_log_cases c ON b.file_number_id_id = c.id"
+    
+    #WHERE c.id = " + str(pk)
+
+    rs_beneficiaries = getResultSet(query_beneficiaries_per_case)
+    
     rs_cases = getResultSet(query_cases)
-    context = {'cases': rs_cases}
+    context = {
+                'beneficiaries': rs_beneficiaries,
+                'cases': rs_cases,
+                }
     return render(request, 'case_log/cases.html', context)
+
+
+
 
 def beneficiaries(request):
     rs_beneficiaries = getResultSet(query_beneficiaries)
@@ -186,3 +211,29 @@ postsList = [
         'date_posted': 'August 28, 2018'
     }
 ]
+
+
+
+def case_detail(request, pk):
+    query_beneficiaries_per_case = "SELECT \
+        	b.id, \
+            b.full_name, \
+            b.age, \
+            c.file_number, \
+            g.gender_type, \
+            bs.beneficiary_status \
+        FROM case_log_beneficiaries b \
+        JOIN case_log_beneficiary_statuses bs ON b.beneficiary_status_id_id = bs.id \
+        JOIN case_log_genders g ON b.gender_id_id = g.id \
+        JOIN case_log_cases c ON b.file_number_id_id = c.id \
+        WHERE c.id = " + str(pk)
+
+    rs_beneficiaries = getResultSet(query_beneficiaries_per_case)
+    rs_cases = getResultSet(query_cases)
+    context = {
+        'beneficiaries': rs_beneficiaries,
+                'cases': rs_cases,
+                }
+    return render(request, 'case_log/case_detail.html', context)
+
+
