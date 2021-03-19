@@ -215,7 +215,20 @@ postsList = [
 
 
 def case_detail(request, pk):
-    query_beneficiaries_per_case = "SELECT \
+
+    query_selectedCase = "SELECT \
+        	c.id, \
+            c.file_number, \
+            m.month, \
+            w.first_name || ' ' || w.last_name AS 'full_name', \
+            cs.case_status \
+        FROM case_log_cases c \
+        JOIN case_log_months m ON m.id = c.month_id_id \
+        JOIN case_log_workers w ON w.id = c.worker_id_id \
+        JOIN case_log_case_statuses cs ON cs.id = c.case_status_id_id \
+        WHERE c.id = " + str(pk)
+
+    query_caseSelectedBeneficiaries = "SELECT \
         	b.id, \
             b.full_name, \
             b.age, \
@@ -228,11 +241,12 @@ def case_detail(request, pk):
         JOIN case_log_cases c ON b.file_number_id_id = c.id \
         WHERE c.id = " + str(pk)
 
-    rs_beneficiaries = getResultSet(query_beneficiaries_per_case)
-    rs_cases = getResultSet(query_cases)
+    rs_selectedCase = getResultSet(query_selectedCase)
+    rs_caseSelectedBeneficiaries = getResultSet(query_caseSelectedBeneficiaries)
+    
     context = {
-        'beneficiaries': rs_beneficiaries,
-                'cases': rs_cases,
+        'selectedCase': rs_selectedCase,
+        'caseSelectedBeneficiaries': rs_caseSelectedBeneficiaries,
                 }
     return render(request, 'case_log/case_detail.html', context)
 

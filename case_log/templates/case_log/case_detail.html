@@ -2,7 +2,31 @@
 <div class="container">
   {% block content %}
   <h1>Case Details</h1>
-  <table class="table table.sm">
+  
+  <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>  
+          <th>File #</th>
+          <th>Month</th>
+          <th>Worker Name</th>
+          <th>Case Status</th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr>
+              <td>{{ selectedCase.0.0 }}</td>
+              <td>{{ selectedCase.0.1 }}</td>
+              <td>{{ selectedCase.0.2 }}</td>
+              <td>{{ selectedCase.0.3 }}</td>
+              <td>{{ selectedCase.0.4 }}</td>
+            </tr>
+      </tbody>
+  </table>
+  
+  
+  <h3>Beneficiaries</h3>
+  <table class="table table.sm table-dark">
       <thead>
           <tr>
               <th>ID</th>  
@@ -15,7 +39,7 @@
           </tr>
       </thead>
       <tbody>
-        {% for beneficiary in beneficiaries %}
+        {% for beneficiary in caseSelectedBeneficiaries %}
             <tr>
               <td>{{ beneficiary.0 }}</td>
               <td>{{ beneficiary.1 }}</td>
