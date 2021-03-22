@@ -1,59 +1,61 @@
 from django.shortcuts import render, redirect
 from .models import workers, genders, cases
 from django.db import connection
-from .forms import WorkerForm, CaseForm
+from .forms import WorkerForm, CaseForm, BeneficiaryForm
 from django.contrib import messages
-
+from django.http import HttpResponseRedirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 # Queries
 
 query_workers = "SELECT \
-        	w.id, \
-            w.first_name, \
-            w.last_name, \
-            w.login_email, \
-            w.login_password, \
-            w.age, \
-            g.gender_type, \
-            j.job_title, \
-            w.first_name || ' ' || w.last_name AS 'full_name' \
-        FROM case_log_workers w \
-        JOIN case_log_genders g ON w.gender_id_id = g.id \
-        JOIN case_log_job_titles j ON j.id = w.job_title_id_id \
-        ORDER BY w.id"
+        	workers.id, \
+            workers.fname, \
+            workers.lname, \
+            workers.login_email, \
+            workers.login_password, \
+            workers.age, \
+            genders.gender, \
+            job_titles.job_title, \
+            workers.fname || ' ' || workers.lname AS 'full_name' \
+        FROM case_log_workers workers \
+        JOIN case_log_genders genders ON workers.gender_id_id = genders.id \
+        JOIN case_log_job_titles job_titles ON job_titles.id = workers.job_title_id_id \
+        ORDER BY workers.id"
 
 query_cases = "SELECT \
-        	c.id, \
-            c.file_number, \
-            m.month, \
-            w.first_name || ' ' || w.last_name AS 'full_name', \
-            cs.case_status \
-        FROM case_log_cases c \
-        JOIN case_log_months m ON m.id = c.month_id_id \
-        JOIN case_log_workers w ON w.id = c.worker_id_id \
-        JOIN case_log_case_statuses cs ON cs.id = c.case_status_id_id \
-        ORDER BY c.id"
+        	cases.id, \
+            cases.file_number, \
+            months.month, \
+            nationalities.nationality, \
+            workers.fname || ' ' || workers.lname AS 'full_name', \
+            caseStatues.case_status, \
+            COUNT(beneficiaries.id) AS Beneficiaries \
+        FROM case_log_cases AS cases \
+        JOIN case_log_months months ON months.id = cases.month_id_id \
+        JOIN case_log_workers workers ON workers.id = cases.worker_id_id \
+        JOIN case_log_case_statuses caseStatues ON caseStatues.id = cases.case_status_id_id \
+        JOIN case_log_nationalities nationalities ON nationalities.id = cases.nationality_id_id \
+        LEFT JOIN case_log_beneficiaries beneficiaries ON cases.id = beneficiaries.case_id_id"
 
 query_beneficiaries = "SELECT \
-        	b.id, \
-            b.full_name, \
-            b.age, \
-            c.file_number, \
-            g.gender_type, \
-            bs.beneficiary_status \
-        FROM case_log_beneficiaries b \
-        JOIN case_log_beneficiary_statuses bs ON b.beneficiary_status_id_id = bs.id \
-        JOIN case_log_genders g ON b.gender_id_id = g.id \
-        JOIN case_log_cases c ON b.file_number_id_id = c.id \
-        ORDER BY b.id"
+        	beneficiaries.id, \
+            beneficiaries.full_name, \
+            beneficiaries.age, \
+            cases.file_number, \
+            genders.gender, \
+            beneficiaryStatuses.beneficiary_status \
+        FROM case_log_beneficiaries beneficiaries \
+        JOIN case_log_beneficiary_statuses beneficiaryStatuses ON beneficiaries.beneficiary_status_id_id = beneficiaryStatuses.id \
+        JOIN case_log_genders genders ON beneficiaries.gender_id_id = genders.id \
+        JOIN case_log_cases cases ON beneficiaries.case_id_id = cases.id"
 
 query_jobTitles = "SELECT * FROM case_log_job_titles"
 query_genders = "SELECT * FROM case_log_genders"
 query_months = "SELECT * FROM case_log_months"
+query_nationalities = "SELECT * FROM case_log_nationalities"
 query_case_statuses = "SELECT * FROM case_log_case_statuses"
-
-
+query_beneficiary_statuses = "SELECT * FROM case_log_beneficiary_statuses"
 
 def getResultSet(query):
     cursor = connection.cursor()
@@ -67,32 +69,30 @@ def workers(request):
     return render(request, 'case_log/workers.html', context)
 
 
-
 def cases(request):
     query_beneficiaries_per_case = "SELECT \
-        b.id, \
-        b.full_name, \
-        b.age, \
-        c.file_number, \
-        g.gender_type, \
-        bs.beneficiary_status \
-    FROM case_log_beneficiaries b \
-    JOIN case_log_beneficiary_statuses bs ON b.beneficiary_status_id_id = bs.id \
-    JOIN case_log_genders g ON b.gender_id_id = g.id \
-    JOIN case_log_cases c ON b.file_number_id_id = c.id"
+        beneficiaries.id, \
+        beneficiaries.full_name, \
+        beneficiaries.age, \
+        cases.file_number, \
+        genders.gender, \
+        beneficiary_statuses.beneficiary_status \
+    FROM case_log_beneficiaries beneficiaries \
+    JOIN case_log_beneficiary_statuses beneficiary_statuses ON beneficiaries.beneficiary_status_id_id = beneficiary_statuses.id \
+    JOIN case_log_genders genders ON beneficiaries.gender_id_id = genders.id \
+    JOIN case_log_cases cases ON beneficiaries.case_id_id = cases.id"
     
-    #WHERE c.id = " + str(pk)
-
     rs_beneficiaries = getResultSet(query_beneficiaries_per_case)
     
-    rs_cases = getResultSet(query_cases)
+    query_cases_odered = query_cases + \
+        " GROUP BY cases.file_number, beneficiaries.case_id_id \
+        ORDER BY cases.id"
+    rs_cases = getResultSet(query_cases_odered)
     context = {
                 'beneficiaries': rs_beneficiaries,
                 'cases': rs_cases,
                 }
     return render(request, 'case_log/cases.html', context)
-
-
 
 
 def beneficiaries(request):
@@ -137,24 +137,24 @@ def add_worker(request):
             return render(request, 'case_log/add_worker.html', tableAndFields)
         return redirect('caselog-workers')
 
-
         # redirect('case_log/workers.html')
     else:
-        tables = {
+        context = {
                 'workers': rs_workers,
                 'genders': rs_genders,
                 'jobTitles': rs_jobTitles,
         }
-        return render(request, 'case_log/add_worker.html', tables)
+        return render(request, 'case_log/add_worker.html', context)
 
 
 
 def add_case(request):
     rs_cases = getResultSet(query_workers)
     rs_months = getResultSet(query_months)
+    rs_nationalities = getResultSet(query_nationalities)
     rs_cases_statuses = getResultSet(query_case_statuses)
     
-
+    # if submit button is pressed
     if request.method == "POST":
         form = CaseForm(request.POST or None)
 
@@ -172,6 +172,7 @@ def add_case(request):
             tableAndFields = {
                 'cases': rs_cases,
                 'months': rs_months,
+                'nationalities': rs_nationalities,
                 'file_number': file_number,
                 'month_id': month_id,
                 'worker_id': worker_id,
@@ -179,75 +180,46 @@ def add_case(request):
             return render(request, 'case_log/add_case.html', tableAndFields)
         return redirect('caselog-cases')
 
-
-        # redirect('case_log/workers.html')
+    # during adding filling the form
     else:
-        tables = {
+        context = {
                 'workers': rs_cases,
                 'months': rs_months,
+                'nationalities': rs_nationalities,
                 'cases_statuses': rs_cases_statuses,
         }
-        return render(request, 'case_log/add_case.html', tables)
-
-
-
-
-def home2 (request):
-    all_workers = Workers.objects.all
-    return render(request, 'case_log/home.html', {'workers': all_workers})
-
-
-postsList = [
-    {
-        'author': 'CoreyMS',
-        'title': 'Blog Post 1',
-        'content': 'First post content',
-        'date_posted': 'August 27, 2018'
-    },
-    {
-        'author': 'Jane Doe',
-        'title': 'Blog Post 2',
-        'content': 'Second post content',
-        'date_posted': 'August 28, 2018'
-    }
-]
-
+        return render(request, 'case_log/add_case.html', context)
 
 
 def case_detail(request, pk):
-
-    query_selectedCase = "SELECT \
-        	c.id, \
-            c.file_number, \
-            m.month, \
-            w.first_name || ' ' || w.last_name AS 'full_name', \
-            cs.case_status \
-        FROM case_log_cases c \
-        JOIN case_log_months m ON m.id = c.month_id_id \
-        JOIN case_log_workers w ON w.id = c.worker_id_id \
-        JOIN case_log_case_statuses cs ON cs.id = c.case_status_id_id \
-        WHERE c.id = " + str(pk)
-
-    query_caseSelectedBeneficiaries = "SELECT \
-        	b.id, \
-            b.full_name, \
-            b.age, \
-            c.file_number, \
-            g.gender_type, \
-            bs.beneficiary_status \
-        FROM case_log_beneficiaries b \
-        JOIN case_log_beneficiary_statuses bs ON b.beneficiary_status_id_id = bs.id \
-        JOIN case_log_genders g ON b.gender_id_id = g.id \
-        JOIN case_log_cases c ON b.file_number_id_id = c.id \
-        WHERE c.id = " + str(pk)
-
+    query_selectedCase = query_cases + " WHERE cases.id = " + str(pk)
     rs_selectedCase = getResultSet(query_selectedCase)
+    rs_beneficiaryStatuses = getResultSet(query_beneficiary_statuses)
+    rs_genders = getResultSet(query_genders)
+    rs_cases = getResultSet(query_cases)
+    query_caseSelectedBeneficiaries = query_beneficiaries + " WHERE cases.id = " + str(pk)
     rs_caseSelectedBeneficiaries = getResultSet(query_caseSelectedBeneficiaries)
-    
+
     context = {
-        'selectedCase': rs_selectedCase,
-        'caseSelectedBeneficiaries': rs_caseSelectedBeneficiaries,
-                }
-    return render(request, 'case_log/case_detail.html', context)
+    'selectedCase': rs_selectedCase,
+    'caseSelectedBeneficiaries': rs_caseSelectedBeneficiaries,
+    'beneficiaryStatuses': rs_beneficiaryStatuses,
+    'genders': rs_genders,
+    'cases': rs_cases,
+            }
+    
+    if request.method == "POST":
+        form = BeneficiaryForm(request.POST or None)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, ('Added Successfully'))
+            temp = str(pk)
+            return HttpResponseRedirect(temp)
+        else:
+            messages.success(request, ('There was an error'))
+            return render(request, 'case_log/case_detail.html', context)
+    else:
+        return render(request, 'case_log/case_detail.html', context)
 
 

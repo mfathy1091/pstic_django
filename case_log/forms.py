@@ -1,14 +1,14 @@
 from django import forms
 
-from .models import workers, genders, job_titles, cases, months
+from .models import workers, genders, job_titles, cases, beneficiaries, months, nationalities
 
 
 class WorkerForm(forms.ModelForm):
     class Meta:
         model = workers
         fields = [
-            'first_name',
-            'last_name',
+            'fname',
+            'lname',
             'login_email',
             'login_password',
             'age',
@@ -23,7 +23,21 @@ class CaseForm(forms.ModelForm):
         fields = [
             'file_number',
             'month_id',
+            'nationality_id',
             'worker_id',
             'case_status_id',
         ]
+
+
+class BeneficiaryForm(forms.ModelForm):
+    class Meta:
+        model = beneficiaries
+        fields = [
+            'case_id',
+            'full_name',
+            'age',
+            'gender_id',
+            'beneficiary_status_id',
+        ]
+
 

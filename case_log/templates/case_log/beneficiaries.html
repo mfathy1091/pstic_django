@@ -2,10 +2,9 @@
 <div class="container">
   {% block content %}
   <h1>Beneficiaries</h1>
-  <table class="table">
-      <thead>
+  <table class="table table table-sm">
+      <thead class="table-light">
           <tr>
-              <th>ID</th>  
               <th>Full Name</th>
               <th>Age</th>
               <th>File #</th>
@@ -17,7 +16,6 @@
       <tbody>
         {% for beneficiary in beneficiaries %}
             <tr>
-              <td>{{ beneficiary.0 }}</td>
               <td>{{ beneficiary.1 }}</td>
               <td>{{ beneficiary.2 }}</td>
               <td>{{ beneficiary.3 }}</td>

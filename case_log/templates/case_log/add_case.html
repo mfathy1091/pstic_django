@@ -1,4 +1,3 @@
-
 {% extends 'case_log/base.html' %}
 
 {% block content %}
@@ -9,7 +8,6 @@
     <div class="form-group">
       <input type="text" class="form-control"  aria-describedby="emailHelp" placeholder="File Number" name="file_number" value="{{ file_number }}">
     </div>
-
 
     <div class="form-group">
       <select class="custom-select" placeholder="Month" name="month_id">
@@ -30,7 +28,16 @@
     </div>
 
     <div class="form-group">
-      <select class="custom-select" placeholder="PSW Name" name="case_status_id">
+      <select class="custom-select" placeholder="Nationality" name="nationality_id">
+        <option selected >Select Nationality</option>
+        {% for x in nationalities %}
+        <option value="{{x.0}}">{{x.1}}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <select class="custom-select" placeholder="Select Case Status" name="case_status_id">
         <option selected >Select Case Status</option>
         {% for x in cases_statuses %}
         <option value="{{x.0}}">{{x.1}}</option>
