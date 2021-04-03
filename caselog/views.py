@@ -7,7 +7,6 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from datetime import datetime
-from .queries import Queries
 
 
 
