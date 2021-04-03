@@ -27,9 +27,10 @@ SECRET_KEY = 'qvnl39ztgn()ktqvn*0r*@wdi#66x=a&4!thm_5_e&6&07-#gw'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+
 ALLOWED_HOSTS = [
-    'pstic.herokuapp.com/',
-    '127.0.0.1',]
+    'pstic.herokuapp.com',
+    '127.0.0.1']
 
 
 # Application definition
