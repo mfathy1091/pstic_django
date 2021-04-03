@@ -1,0 +1,107 @@
+{% extends "caselog/base.html" %}
+<div class="container">
+  {% block content %}
+  <h1>Monthly Log</h1>
+<div class="container">
+
+	<form method="post">
+		{% csrf_token %}
+		<!-- {{ month_form.as_p }} -->
+	
+		<div class="form-group">
+			<select class="custom-select" placeholder="Month" name="month">
+			  <option selected >Select Month</option>
+			  {% for month in months %}
+			  <option value="{{month.id}}">{{month.name}}</option>
+			  {% endfor %}
+			</select>
+		  </div>
+		<button type="submit">Submit</button>
+	</form>
+
+	<div class="row">
+
+			<table class="table table-sm" style="border-collapse:collapse; text-align: center;">
+				<thead class="table-light">
+					<tr>
+						<th>Case ID</th>
+						<th>File #</th>
+						<th>Month</th>
+						<th>Case Status</th>
+						<th>Direct Benef</th>
+						<th>Age</th>
+						<th>Gender</th>
+						<th>Nationality</th>
+						<th>Case Status</th>
+						<!--<th>PS Worker</th>-->
+					</tr>
+				</thead>
+				<tbody>
+					{% for entry in monthlycases %}
+						<tr colspan="6" data-toggle="collapse" data-target="#demo{{case.0}}" class="accordion-toggle">
+							<td>{{ entry.case.id }}</td>
+							<td><a href="{% url 'case-detail' entry.case.id %}">{{ entry.case.filenum }}</a></td>
+							<td>{{ entry.month.name }}</td>
+							<td>{{ entry.case.casetype }}</td>
+							<td>{{ entry.case.directbenef }}</td>
+							<td>{{ entry.case.directbenef.age }}</td>
+							<td>{{ entry.case.directbenef.gender }}</td>
+							<td>{{ entry.case.directbenef.nationality }}</td>
+							<td>{{ entry.casestatus.name }}</td>
+							<!--<td>{% for worker in entry.case.psworkers.all %}{{ worker }}{% endfor %}</td>-->
+						</tr>
+		
+					{% endfor %}
+				</tbody>
+			</table>
+
+
+	</div>
+
+</div>
+
+
+
+  {% endblock content %}
+</div>
+
+
+				<!--beneficiaries details-->
+					<!--	
+
+						<tr>
+							<td colspan="6" class="hiddenRow">
+								<div class="collapse" id="demo{{case.0}}">
+									
+								
+									
+									<table class="table table-sm table-dark table-bordered" style="margin: 0px 10px 0px 40px;">
+										<thead>
+											<tr>
+												<th>Full Name</th>
+												<th>Age</th>
+												<th>Gender</th>
+												<th>Beneficiary Status</th>
+											</tr>
+										</thead>
+										<tbody>
+										  	{% for beneficiary in beneficiaries_for_selected_case %}
+												{% if beneficiary.3 == case.1 %}
+													<tr>
+														<td>{{ beneficiary.1 }}</td>
+														<td>{{ beneficiary.2 }}</td>
+														<td>{{ beneficiary.4 }}</td>
+														<td>{{ beneficiary.5 }}</td>
+													</tr>
+												{% endif %}
+											{% endfor %}
+										</tbody>
+									</table>
+								</div> 
+							</td> 
+						
+						</tr>
+
+					-->
+
+

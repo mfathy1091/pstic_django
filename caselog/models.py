@@ -93,4 +93,3 @@ class MonthLog(models.Model):
     case = models.ForeignKey(Case, on_delete=models.CASCADE)
     month = models.ForeignKey(Month, on_delete=models.CASCADE)
     casestatus = models.ForeignKey(CaseStatus, on_delete=models.CASCADE)
-

@@ -69,8 +69,9 @@ class AddCaseForm(forms.Form):
     age = forms.IntegerField()
     gender = forms.CharField(max_length=100)
     nationality = forms.CharField(max_length=100)
-    
+    month = forms.CharField(max_length=100)
 
-#class CaseForm2(forms.Form):
-#    post = forms.CharField()
+
+class FilterByMonthForm(forms.Form):
+    month = forms.CharField(max_length=100)
 

@@ -11,5 +11,9 @@ urlpatterns = [
      path('', views.PSWorkersView.as_view(), name='caselog-home'),
      path('case/<int:pk>', views.CaseDetail.as_view(), name='case-detail'),
      path('cases', views.CaseView.as_view(), name='caselog-cases'),
+
+     path('monthlycases', views.MonthlyCaseView.as_view(), name='caselog-monthlycases'),
+
+
      #path('cases', CaseView.as_view(template_name='caselog/cases.html'), name='caselog-cases'),
 ]

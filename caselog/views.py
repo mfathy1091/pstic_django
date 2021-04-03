@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 from django.views import View
-from .models import PsWorker, Gender, Case, Nationality, Month, CaseType, DirectBenef, IndirectBenef
+from .models import PsWorker, Gender, Case, Nationality, Month, CaseType, DirectBenef, IndirectBenef, MonthLog
 from django.db import connection
-from .forms import PSWorkerForm, CaseForm, DirectBenefForm, MonthForm, CaseForm, PSWorkerForm, AddCaseForm
+from .forms import PSWorkerForm, CaseForm, DirectBenefForm, FilterByMonthForm, MonthForm, CaseForm, PSWorkerForm, AddCaseForm
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
@@ -117,6 +117,7 @@ class AddCaseView(TemplateView):
             casetype_obj = CaseType.objects.filter(id__exact=form.cleaned_data['casetype']).get()
             gender_obj = Gender.objects.filter(id__exact=form.cleaned_data['gender']).get()
             nationality_obj = Nationality.objects.filter(id__exact=form.cleaned_data['nationality']).get()
+            month_obj = MonthLog.objects.filter(id__exact=form.cleaned_data['month']).get()
 
             # get values from input fields
             fullname = form.cleaned_data.get('fullname')
@@ -133,7 +134,7 @@ class AddCaseView(TemplateView):
             return render(request, self.template_name, context)
             #return redirect ('caselog-cases')
         else:
-            print(case_form.errors)
+            print(form.errors)
             filenum = request.POST['filenum']
             fullname = request.POST['fullname']
             age = request.POST['age']
@@ -225,6 +226,7 @@ class CaseDetail(TemplateView):
         return render(request, self.template_name, context)
 
 
+
     
 class CaseView(TemplateView):
     template_name = 'caselog/cases.html'
@@ -258,3 +260,58 @@ class CaseView(TemplateView):
                     'months': self.months,
                     }
         return render(request, self.template_name, context)
+
+
+        
+    
+class MonthlyCaseView(TemplateView):
+    template_name = 'caselog/monthlycases.html'
+    monthlycases = MonthLog.objects.prefetch_related('case__directbenef__nationality', 'casestatus', 'month')
+    #monthlycases = MonthLog.objects.all()
+
+    cases = Case.objects.all().prefetch_related('directbenef__nationality', 'casetype', 'psworkers')
+    months = Month.objects.all()
+
+    def get(self, request, id=None, *args, **kwargs):
+        #  define a form to render it
+        month_form = MonthForm()
+
+
+        context = {
+                    'cases': self.cases,
+                    'monthlycases': self.monthlycases,
+                    'month_form': month_form,
+                    'months': self.months,
+                    }
+        return render(request, self.template_name, context)
+
+    def post(self, request, id=None, *args, **kwargs):
+        month_form = FilterByMonthForm(request.POST)
+        print('FORM STATUS')
+        print(month_form.is_valid())
+        if month_form.is_valid():
+            text = month_form.cleaned_data['month']
+            print('TEXT IS')
+            print(text)
+            monthlycases = MonthLog.objects.filter(month__exact=text).prefetch_related('case__directbenef__nationality', 'casestatus', 'month')
+            for entry in monthlycases:
+                print(entry)
+
+            context = {
+                    'cases': self.cases,
+                    'monthlycases': monthlycases,
+                    'month_form': month_form,
+                    'months': self.months,
+                    }
+            return render(request, self.template_name, context)
+        else:
+            # Retrieved fields
+            print(month_form.errors)
+            messages.success(request, ('There was an error'))
+        
+            contextAndRetriedvedFields = {
+                    'cases': self.cases,
+                    'month_form': month_form,
+                    'months': self.months,
+                    }
+            return render(request, self.template_name, contextAndRetriedvedFields)
