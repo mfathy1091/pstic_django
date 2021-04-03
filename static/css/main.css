@@ -13,3 +13,7 @@
   }
 }
 
+.shade_last_row tr:last-child {
+  background: #f8f9fa !important;
+  font-weight: bold!important;
+}

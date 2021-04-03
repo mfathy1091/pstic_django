@@ -34,7 +34,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'login_portal.apps.LoginPortalConfig',
-    'case_log.apps.CaseLogConfig',
+    'caselog.apps.CaseLogConfig',
     'cash_box.apps.CashBoxConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -52,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'django_project.urls'
@@ -81,8 +83,12 @@ WSGI_APPLICATION = 'django_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'pstic_db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'pstic_db',
+        'HOST': 'dbinstance.cuxlljg5rhwe.us-east-2.rds.amazonaws.com',
+        'PORT': '5439',
+        'USER': 'admin',
+        'PASSWORD': 'aVCfsADb9eZhH5Dx',
     }
 }
 
@@ -124,3 +130,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [ os.path.join(BASE_DIR, 'static'), ]
+
+
+INTERNAL_IPS = [
+    '127.0.0.1'
+]
+

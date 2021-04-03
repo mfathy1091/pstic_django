@@ -1,0 +1,44 @@
+{% extends "caselog/base.html" %}
+<div class="container">
+  {% block content %}
+  <h1>All Beneficiaries</h1>
+  <table class="table table table-sm">
+      <thead class="table-light">
+          <tr>
+              <th>Full Name</th>
+              <th>Age</th>
+              <th>File #</th>
+              <th>Gender</th>
+              <th>Beneficiary Status</th>
+              
+          </tr>
+      </thead>
+      <tbody>
+        {% for beneficiary in beneficiaries %}
+            <tr>
+              <td>{{ beneficiary.1 }}</td>
+              <td>{{ beneficiary.2 }}</td>
+              <td>{{ beneficiary.3 }}</td>
+              <td>{{ beneficiary.4 }}</td>
+              <td>{{ beneficiary.5 }}</td>
+            </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+
+  
+	<div class="container-fluid">
+		<div class="row">
+			<!-- beneficiaries statistics tables  -->
+			{% include 'caselog/statistics_beneficiaries.html' %}
+
+			<main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+				{% block statistics_beneficiaries_content %}
+
+				{% endblock %}
+			</main>
+		</div>
+	</div>
+
+  {% endblock content %}
+</div>

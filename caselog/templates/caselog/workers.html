@@ -1,0 +1,29 @@
+{% extends "caselog/base.html" %}
+<div class="container">
+  {% block content %}
+  <h1>Workers</h1>
+  <table class="table">
+      <thead>
+          <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Age</th>
+              <th>Gender</th>
+              <th>Ntionality</th>
+          </tr>
+      </thead>
+      <tbody>
+        {% for worker in psworkers %}
+            <tr>
+              <td>{{ worker.id }}</td>
+              <td>{{ worker.fullname }}</td>
+              <td>{{ worker.age }}</td>
+              <td>{{ worker.gender }}</td>
+              <td>{{ worker.nationality }}</td>
+            </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+
+  {% endblock content %}
+</div>
