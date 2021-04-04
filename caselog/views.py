@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 from django.views import View
-from .models import PsWorker, Gender, Case, Nationality, Month, CaseType, DirectBenef, IndirectBenef, MonthLog
+from .models import PsWorker, Gender, Case, Nationality, Month, CaseType, CaseStatus, IndirectBenef, LogEntry
 from django.db import connection
-from .forms import PSWorkerForm, CaseForm, DirectBenefForm, FilterByMonthForm, MonthForm, CaseForm, PSWorkerForm, AddCaseForm
+from .forms import PSWorkerForm, CaseForm, FilterByMonthForm, MonthForm, CaseForm, PSWorkerForm, AddCaseForm, AddLogEntryForm
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
@@ -117,7 +117,7 @@ class AddCaseView(TemplateView):
             casetype_obj = CaseType.objects.filter(id__exact=form.cleaned_data['casetype']).get()
             gender_obj = Gender.objects.filter(id__exact=form.cleaned_data['gender']).get()
             nationality_obj = Nationality.objects.filter(id__exact=form.cleaned_data['nationality']).get()
-            month_obj = MonthLog.objects.filter(id__exact=form.cleaned_data['month']).get()
+            month_obj = LogEntry.objects.filter(id__exact=form.cleaned_data['month']).get()
 
             # get values from input fields
             fullname = form.cleaned_data.get('fullname')
@@ -160,7 +160,7 @@ class AddCaseView(TemplateView):
 
 
 
-class AddMonthLog(TemplateView):
+class AddLogEntry(TemplateView):
     template_name = 'caselog/add_worker.html'
     psworkers = PsWorker.objects.all()
     genders = Gender.objects.all()
@@ -229,6 +229,8 @@ class CaseDetail(TemplateView):
 
     
 class CaseView(TemplateView):
+
+
     template_name = 'caselog/cases.html'
     cases = Case.objects.all().select_related('directbenef')
     months = Month.objects.all()
@@ -264,49 +266,136 @@ class CaseView(TemplateView):
 
         
     
-class MonthlyCaseView(TemplateView):
-    template_name = 'caselog/monthlycases.html'
-    monthlycases = MonthLog.objects.prefetch_related('case__directbenef__nationality', 'casestatus', 'month')
-    #monthlycases = MonthLog.objects.all()
+class LogEntriesView(TemplateView):
+    query_statistics_cases_body = "SELECT \
+        logentry.id, \
+        nationality.name AS nation,\
+        COUNT(logentry.id) AS total, \
+        sum(case when logentry.dage > 0 AND logentry.dage <= 5 Then 1 else 0 end) As age_0_5, \
+        sum(case when logentry.dage >= 6 AND logentry.dage <= 9 Then 1 else 0 end) As age_6_9, \
+        sum(case when logentry.dage >= 10 AND logentry.dage <= 14 Then 1 else 0 end) As age_10_14, \
+        sum(case when logentry.dage >= 15 AND logentry.dage <= 17 Then 1 else 0 end) As age_15_17, \
+        sum(case when logentry.dage >= 18 AND logentry.dage <= 24 Then 1 else 0 end) As age_18_24, \
+        sum(case when logentry.dage >= 25 AND logentry.dage <= 49 Then 1 else 0 end) As age_25_49, \
+        sum(case when logentry.dage >= 50 AND logentry.dage <= 59 Then 1 else 0 end) As age_50_59, \
+        sum(case when logentry.dage >= 60 Then 1 else 0 end) As age_gt60 \
+    FROM caselog_logentry AS logentry \
+    JOIN caselog_month month ON month.id = logentry.month_id \
+    JOIN caselog_nationality nationality ON nationality.id = logentry.dnationality_id"
 
-    cases = Case.objects.all().prefetch_related('directbenef__nationality', 'casetype', 'psworkers')
+
+    query_statistics_cases_totals_row = "UNION \
+        SELECT \
+            logentry.id, \
+            \"TOTAL\", \
+            COUNT(logentry.id) AS total, \
+            sum(case when logentry.dage > 0 AND logentry.dage <= 5 Then 1 else 0 end) As age_0_5, \
+            sum(case when logentry.dage >= 6 AND logentry.dage <= 9 Then 1 else 0 end) As age_6_9, \
+            sum(case when logentry.dage >= 10 AND logentry.dage <= 14 Then 1 else 0 end) As age_10_14, \
+            sum(case when logentry.dage >= 15 AND logentry.dage <= 17 Then 1 else 0 end) As age_15_17, \
+            sum(case when logentry.dage >= 18 AND logentry.dage <= 24 Then 1 else 0 end) As age_18_24, \
+            sum(case when logentry.dage >= 25 AND logentry.dage <= 49 Then 1 else 0 end) As age_25_49, \
+            sum(case when logentry.dage >= 50 AND logentry.dage <= 59 Then 1 else 0 end) As age_50_59, \
+            sum(case when logentry.dage >= 60 Then 1 else 0 end) As age_gt60 \
+        FROM caselog_logentry AS logentry \
+        JOIN caselog_month month ON month.id = logentry.month_id \
+        JOIN caselog_nationality nationality ON nationality.id = logentry.dnationality_id"
+
+
+
+    template_name = 'caselog/logentries.html'
+    logentries = LogEntry.objects.prefetch_related('month', 'case', 'casestatus', 'casetype', 'dgender', 'dnationality')
+    cases = Case.objects.all().prefetch_related()
     months = Month.objects.all()
+    nationalities = Nationality.objects.all()
+    
+
+    def getstats(self):
+        nationalities = Nationality.objects.all()
+        for nation in nationalities:
+            logentries_per_nation = self.logentries.filter(dnationality__exact=nation)
+            total_per_nation = logentries_per_nation.count()
+            total_ages_0_5 = logentries_per_nation.filter(dage__gte=0).filter(dage__lte=5).count()
+            total_ages_6_9 = logentries_per_nation.filter(dage__gte=6).filter(dage__lte=9).count()
+            total_ages_10_14 = logentries_per_nation.filter(dage__gte=10).filter(dage__lte=14).count()
+            total_ages_15_17 = logentries_per_nation.filter(dage__gte=15).filter(dage__lte=17).count()
+            total_ages_18_24 = logentries_per_nation.filter(dage__gte=18).filter(dage__lte=24).count()
+            total_ages_25_49 = logentries_per_nation.filter(dage__gte=25).filter(dage__lte=49).count()
+            total_ages_50_59 = logentries_per_nation.filter(dage__gte=50).filter(dage__lte=59).count()
+            total_ages_gt_60 = logentries_per_nation.filter(dage__gte=60).count()
+
+            
+            print(logentries_per_nation)
+            #print(nation, 
+            #total_per_nation, 
+            #total_ages_0_5, 
+            #total_ages_6_9, 
+            #total_ages_10_14, 
+          #  total_ages_15_17, 
+           # total_ages_18_24, 
+           # total_ages_25_49,
+           # total_ages_50_59,
+           # total_ages_gt_60)
+
+
 
     def get(self, request, id=None, *args, **kwargs):
-        #  define a form to render it
+        logentries = LogEntry.objects.filter(month__exact=1).prefetch_related('month', 'case', 'casestatus', 'casetype', 'dgender', 'dnationality')
+
+        query_statistics_new_cases = self.query_statistics_cases_body + " WHERE \
+            logentry.month_id = 1 AND logentry.casestatus_id = 1 \
+            GROUP BY nation " + self.query_statistics_cases_totals_row + " WHERE \
+            logentry.month_id = 1 AND logentry.casestatus_id = 1"
+
+        query_statistics_active_cases = self.query_statistics_cases_body + " WHERE \
+            logentry.month_id = 1 AND (logentry.casestatus_id = 1 OR logentry.casestatus_id = 2) \
+            GROUP BY nation " + self.query_statistics_cases_totals_row + " WHERE \
+            logentry.month_id = 1 AND (logentry.casestatus_id = 1 OR logentry.casestatus_id = 2)"
+
+        rs_newstats = LogEntry.objects.raw(query_statistics_new_cases)
+        rs_activestats = LogEntry.objects.raw(query_statistics_active_cases)
+
         month_form = MonthForm()
 
-
         context = {
-                    'cases': self.cases,
-                    'monthlycases': self.monthlycases,
+                    'logentries': logentries,
                     'month_form': month_form,
                     'months': self.months,
+                    'nationalities': self.nationalities,
+                    'newstats': rs_newstats,
+                    'activestats': rs_activestats,
                     }
         return render(request, self.template_name, context)
 
+
     def post(self, request, id=None, *args, **kwargs):
         month_form = FilterByMonthForm(request.POST)
-        print('FORM STATUS')
-        print(month_form.is_valid())
         if month_form.is_valid():
             text = month_form.cleaned_data['month']
-            print('TEXT IS')
-            print(text)
-            monthlycases = MonthLog.objects.filter(month__exact=text).prefetch_related('case__directbenef__nationality', 'casestatus', 'month')
-            for entry in monthlycases:
-                print(entry)
+            logentries = LogEntry.objects.filter(month__exact=text).prefetch_related('month', 'case', 'casestatus', 'casetype', 'dgender', 'dnationality')
 
+            query_statistics_new_cases = self.query_statistics_cases_body + " WHERE \
+                logentry.month_id = " + text + " AND logentry.casestatus_id = 1 \
+                GROUP BY nation " + self.query_statistics_cases_totals_row + " WHERE \
+                logentry.month_id = " + text + " AND logentry.casestatus_id = 1"
+
+            query_statistics_active_cases = self.query_statistics_cases_body + " WHERE \
+                logentry.month_id = " + text + " AND (logentry.casestatus_id = 1 OR logentry.casestatus_id = 2) \
+                GROUP BY nation " + self.query_statistics_cases_totals_row + " WHERE \
+                logentry.month_id = " + text + " AND (logentry.casestatus_id = 1 OR logentry.casestatus_id = 2)"
+
+            rs_newstats = LogEntry.objects.raw(query_statistics_new_cases)
+            rs_activestats = LogEntry.objects.raw(query_statistics_active_cases)
             context = {
                     'cases': self.cases,
-                    'monthlycases': monthlycases,
+                    'logentries': logentries,
                     'month_form': month_form,
                     'months': self.months,
+                    'newstats': rs_newstats,
+                    'activestats': rs_activestats,
                     }
             return render(request, self.template_name, context)
         else:
-            # Retrieved fields
-            print(month_form.errors)
             messages.success(request, ('There was an error'))
         
             contextAndRetriedvedFields = {
@@ -315,3 +404,90 @@ class MonthlyCaseView(TemplateView):
                     'months': self.months,
                     }
             return render(request, self.template_name, contextAndRetriedvedFields)
+
+    
+
+class AddLogEntryView(TemplateView):
+    template_name = 'caselog/add_logentry.html'
+    cases = Case.objects.all()
+    casetypes = CaseType.objects.all()
+    casestatuses = CaseStatus.objects.all()
+    months = Month.objects.all()
+    genders = Gender.objects.all()
+    nationalities = Nationality.objects.all()
+    psworkers = PsWorker.objects.all()
+
+    def get(self, request):
+        context = {
+        'case': self.cases,
+        'casetypes': self.casetypes,
+        'casestatuses': self.casestatuses,
+        'months': self.months,
+        'genders': self.genders,
+        'nationalities': self.nationalities,
+        'psworkers': self.psworkers,
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request):
+        context = {
+        'case': self.cases,
+        'casetypes': self.casetypes,
+        'casestatuses': self.casestatuses,
+        'months': self.months,
+        'genders': self.genders,
+        'nationalities': self.nationalities,
+        'psworkers': self.psworkers,
+        }
+        form = AddLogEntryForm(request.POST)
+        print('FORM STATUS')
+        print(form.is_valid())
+        if form.is_valid():
+            # get fk objects selected from dropdowns fields
+            month_obj = Month.objects.filter(id__exact=form.cleaned_data['month']).get()
+            casestatus_obj = CaseStatus.objects.filter(id__exact=form.cleaned_data['casestatus']).get()
+            casetype_obj = CaseType.objects.filter(id__exact=form.cleaned_data['casetype']).get()
+            gender_obj = Gender.objects.filter(id__exact=form.cleaned_data['gender']).get()
+            nationality_obj = Nationality.objects.filter(id__exact=form.cleaned_data['nationality']).get()
+            
+
+            # get values from input fields
+            fullname = form.cleaned_data.get('fullname')
+            filenum = form.cleaned_data['filenum']
+            age = form.cleaned_data['age']
+
+            # 1) create, fill, and save CaseObject then LogEntry Object            
+            case_obj = Case(filenum= filenum)
+            case_obj.save()
+            
+            logentry_obj = LogEntry(case=case_obj, casestatus= casestatus_obj, month= month_obj, casetype=casetype_obj, dage= age, dfullname= fullname, dgender=gender_obj, dnationality=nationality_obj)
+            logentry_obj.save()
+
+            messages.success(request, ('Added Successfully'))
+            return render(request, self.template_name, context)
+            #return redirect ('caselog-cases')
+        else:
+            print(form.errors)
+            filenum = request.POST['filenum']
+            fullname = request.POST['fullname']
+            age = request.POST['age']
+            #gender = request.POST['gender']
+            #nationality = request.POST['nationality']
+            #addpsworker_form = PSWorkerForm(request.POST) # refills the form if you instatioated the form naem in html form tag and removed the hard coded form
+            
+            messages.success(request, ('There was an error'))
+
+            contextAndRetriedvedFields = {
+            'case': self.cases,
+            'casetypes': self.casetypes,
+            'months': self.months,
+            'genders': self.genders,
+            'nationalities': self.nationalities,
+            'psworkers': self.psworkers,
+            
+            'filenum': filenum,
+            'fullname': fullname,
+            'age': age,
+            }
+        return render(request, self.template_name, contextAndRetriedvedFields)
+            

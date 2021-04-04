@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import PsWorker, Gender, Case, Month, Nationality, DirectBenef, IndirectBenef, CaseType
+from .models import PsWorker, Gender, Case, Month, Nationality, IndirectBenef, CaseType
 
 
 class PSWorkerForm(forms.ModelForm):
@@ -19,28 +19,6 @@ class CaseForm(forms.ModelForm):
         model = Case
         fields = [
             'filenum',
-        ]
-
-
-class IndirectBenefForm(forms.ModelForm):
-    class Meta:
-        model = DirectBenef
-        fields = [
-            'fullname',
-            'age',
-            'gender',
-            'nationality',
-        ]
-
-
-class DirectBenefForm(forms.ModelForm):
-    class Meta:
-        model = IndirectBenef
-        fields = [
-            'fullname',
-            'age',
-            'gender',
-            'nationality',
         ]
 
 
@@ -71,6 +49,16 @@ class AddCaseForm(forms.Form):
     nationality = forms.CharField(max_length=100)
     month = forms.CharField(max_length=100)
 
+class AddLogEntryForm(forms.Form):
+    month = forms.CharField(max_length=100)
+    casestatus = forms.CharField(max_length=100)
+    filenum = forms.CharField(max_length=100)
+    casetype = forms.CharField(max_length=100)
+    fullname = forms.CharField(max_length=100)
+    age = forms.IntegerField()
+    gender = forms.CharField(max_length=100)
+    nationality = forms.CharField(max_length=100)
+    
 
 class FilterByMonthForm(forms.Form):
     month = forms.CharField(max_length=100)

@@ -15,13 +15,22 @@
 
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{% url 'caselog-monthlycases' %}">
+        <a class="nav-link" href="{% url 'caselog-logentries' %}">
           <span data-feather="users"></span>
-          Monthly Cases
+          Monthly Log
         </a>
       </li>
     </li>
 
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'caselog-addlogentry' %}">
+        <span data-feather="users"></span>
+        Add Case in Log
+      </a>
+    </li>
+  </li>
+<!--
       </li>
       <li class="nav-item">
         <a class="nav-link" href="{% url 'caselog-cases' %}">
@@ -61,7 +70,7 @@
           Add Worker
         </a>
       </li>
-     
+     -->
     </ul>
   </div>
 </nav>

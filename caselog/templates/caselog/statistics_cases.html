@@ -5,7 +5,7 @@
   <br>
   
   <h4>STATISTICS - NEW - Cases</h4>
-  <table class="table table table-sm shade_last_row" style="text-align: center;">
+  <table class="table table table-sm shade_last_row" style="text-align: center">
       <thead class="table-light">
           <tr>
               <th>Nationality</th>
@@ -21,18 +21,18 @@
           </tr>
       </thead>
       <tbody>
-        {% for row in statistics_new_cases %}
+        {% for stat in newstats %}
             <tr>
-              <td>{{ row.0 }}</td>
-              <td>{{ row.1 }}</td>
-              <td>{{ row.2 }}</td>
-              <td>{{ row.3 }}</td>
-              <td>{{ row.4 }}</td>
-              <td>{{ row.5 }}</td>
-              <td>{{ row.6 }}</td>
-              <td>{{ row.7 }}</td>
-              <td>{{ row.8 }}</td>
-              <td>{{ row.9 }}</td>
+              <td>{{ stat.nation }}</td>
+              <td>{{ stat.total }}</td>
+              <td>{{ stat.age_0_5 }}</td>
+              <td>{{ stat.age_6_9 }}</td>
+              <td>{{ stat.age_10_14 }}</td>
+              <td>{{ stat.age_15_17 }}</td>
+              <td>{{ stat.age_18_24 }}</td>
+              <td>{{ stat.age_25_49 }}</td>
+              <td>{{ stat.age_50_59 }}</td>
+              <td>{{ stat.age_gt60 }}</td>
             </tr>
           {% endfor %}
       </tbody>
@@ -58,18 +58,18 @@
           </tr>
       </thead>
       <tbody>
-        {% for row in statistics_active_cases %}
+        {% for stat in activestats %}
             <tr>
-              <td>{{ row.0 }}</td>
-              <td>{{ row.1 }}</td>
-              <td>{{ row.2 }}</td>
-              <td>{{ row.3 }}</td>
-              <td>{{ row.4 }}</td>
-              <td>{{ row.5 }}</td>
-              <td>{{ row.6 }}</td>
-              <td>{{ row.7 }}</td>
-              <td>{{ row.8 }}</td>
-              <td>{{ row.9 }}</td>
+              <td>{{ stat.nation }}</td>
+              <td>{{ stat.total }}</td>
+              <td>{{ stat.age_0_5 }}</td>
+              <td>{{ stat.age_6_9 }}</td>
+              <td>{{ stat.age_10_14 }}</td>
+              <td>{{ stat.age_15_17 }}</td>
+              <td>{{ stat.age_18_24 }}</td>
+              <td>{{ stat.age_25_49 }}</td>
+              <td>{{ stat.age_50_59 }}</td>
+              <td>{{ stat.age_gt60 }}</td>
             </tr>
           {% endfor %}
       </tbody>
