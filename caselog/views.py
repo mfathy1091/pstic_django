@@ -213,13 +213,15 @@ class CaseDetail(TemplateView):
     template_name = 'caselog/case_detail.html'
 
     def get(self, request, pk, *args, **kwargs):
-        selectedcase_obj = Case.objects.get(id=pk)
-        selectedIndirectBenefs_qs = IndirectBenef.objects.filter(case_id__exact=pk)
+        selectedlogentry_obj = LogEntry.objects.filter(id__exact=pk).get()
+        selectedIndirectBenefs_qs = IndirectBenef.objects.filter(case_id__exact=selectedlogentry_obj.case)
         count = selectedIndirectBenefs_qs.count()
 
+        print(selectedlogentry_obj)
+        
 
         context = {
-                    'selectedcase': selectedcase_obj,
+                    'selectedlogentry': selectedlogentry_obj,
                     'selectedIndirectBenefs': selectedIndirectBenefs_qs,
                     'count': count,
                     }
@@ -364,6 +366,7 @@ class LogEntriesView(TemplateView):
                     'nationalities': self.nationalities,
                     'newstats': rs_newstats,
                     'activestats': rs_activestats,
+                    'selectedmonth': 'January',
                     }
         return render(request, self.template_name, context)
 
@@ -386,6 +389,8 @@ class LogEntriesView(TemplateView):
 
             rs_newstats = LogEntry.objects.raw(query_statistics_new_cases)
             rs_activestats = LogEntry.objects.raw(query_statistics_active_cases)
+            
+            rs_selectedmonth = Month.objects.filter(id__exact=text).get()
             context = {
                     'cases': self.cases,
                     'logentries': logentries,
@@ -393,6 +398,7 @@ class LogEntriesView(TemplateView):
                     'months': self.months,
                     'newstats': rs_newstats,
                     'activestats': rs_activestats,
+                    'selectedmonth': rs_selectedmonth,
                     }
             return render(request, self.template_name, context)
         else:

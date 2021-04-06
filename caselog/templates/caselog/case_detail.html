@@ -6,26 +6,27 @@
   <table class="table table-sm">
     <thead class="table-light">
       <tr>
-        <th>Case ID</th>
-        <th>File #</th>
+        <th>Month</th>
         <th>Case Status</th>
+        <th>File #</th>
+        <th>Case Type</th>
         <th>Direct Benef</th>
         <th>Age</th>
         <th>Gender</th>
         <th>Nationality</th>
-        <th>PS Worker</th>
       </tr>
     </thead>
     <tbody>
         <tr>
-          <td>{{ selectedcase.id }}</td>
-          <td>{{ selectedcase.filenum }}</a></td>
-          <td>{{ selectedcase.casetype }}</td>
-          <td>{{ selectedcase.directbenef }}</td>
-          <td>{{ selectedcase.directbenef.age }}</td>
-          <td>{{ selectedcase.directbenef.gender }}</td>
-          <td>{{ selectedcase.directbenef.nationality }}</td>
-          <td>{% for worker in selectedcase.psworkers.all %}{{ worker }}{% endfor %}</td>
+          <td>{{ selectedlogentry.month.name }}</td>
+          <td>{{ selectedlogentry.casestatus.name }}</td>
+          <td>{{ selectedlogentry.case.filenum }}</td>
+          <td>{{ selectedlogentry.casetype }}</td>
+          <td>{{ selectedlogentry.dfullname }}</td>
+          <td>{{ selectedlogentry.dage }}</td>
+          <td>{{ selectedlogentry.dgender }}</td>
+          <td>{{ selectedlogentry.dnationality }}</td>
+          <!--<td>{% for worker in selectedcase.psworkers.all %}{{ worker }}{% endfor %}</td>-->
         </tr>
     </tbody>
   </table>
