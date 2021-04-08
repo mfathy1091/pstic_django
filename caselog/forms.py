@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import PsWorker, Gender, Case, Month, Nationality, IndirectBenef, CaseType
+from .models import *
 
 
 class PSWorkerForm(forms.ModelForm):
@@ -22,22 +22,8 @@ class CaseForm(forms.ModelForm):
         ]
 
 
-
-
-class MonthForm(forms.ModelForm):
-    class Meta:
-        model = Month
-        fields = [
-            'name',
-        ]
-
-
-class NationalityForm(forms.ModelForm):
-    class Meta:
-        model = Nationality
-        fields = [
-            'name',
-        ]
+class MonthForm(forms.Form):
+    month = forms.CharField(max_length=100)
 
 
 class AddCaseForm(forms.Form):

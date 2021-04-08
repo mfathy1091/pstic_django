@@ -5,50 +5,30 @@ from django.db.models.signals import post_save
 
 
 
-class CaseStatus(models.Model):
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.name
-
-class Month(models.Model):
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=50)
-
-    def __str__(self):
-	    return self.name
-
-
-class Gender(models.Model):
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.name
-
-
-class Nationality(models.Model):
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.name
-
-
-class CaseType(models.Model):
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.name
-
 class PsWorker(models.Model):
+    GENDER = (
+        ('Male', 'Male'),
+        ('Female', 'Female'),
+    )
+    
+    NATIONALITY = (
+        ('Syria', 'Syria'),
+        ('Sudan', 'Sudan'),
+        ('S. Sudan', 'S. Sudan'),
+        ('Ethiopia', 'Ethiopia'),
+        ('Iraq', 'Iraq'),
+        ('Somalia', 'Somalia'),
+        ('Eritrea', 'Eritrea'),
+        ('Yemen', 'Yemen'),
+        ('Comoros', 'Comoros'),
+        ('Cameron', 'Cameron'),
+    )
+
     id = models.AutoField(primary_key=True)
     fullname = models.CharField(max_length=50)
     age = models.IntegerField()
-    gender = models.ForeignKey(Gender, on_delete=models.CASCADE)
-    nationality = models.ForeignKey(Nationality, on_delete=models.CASCADE)
+    gender = models.CharField(max_length=200, null=True, choices=GENDER)
+    nationality = models.CharField(max_length=200, null=True, choices=NATIONALITY)
 
     def __str__(self):
         return self.fullname
@@ -63,11 +43,29 @@ class Case(models.Model):
         return self.filenum
 
 class IndirectBenef(models.Model):
+    GENDER = (
+        ('Male', 'Male'),
+        ('Female', 'Female'),
+    )
+    
+    NATIONALITY = (
+        ('Syria', 'Syria'),
+        ('Sudan', 'Sudan'),
+        ('S. Sudan', 'S. Sudan'),
+        ('Ethiopia', 'Ethiopia'),
+        ('Iraq', 'Iraq'),
+        ('Somalia', 'Somalia'),
+        ('Eritrea', 'Eritrea'),
+        ('Yemen', 'Yemen'),
+        ('Comoros', 'Comoros'),
+        ('Cameron', 'Cameron'),
+    )
+
     id = models.AutoField(primary_key=True)
     fullname = models.CharField(max_length=50)
     age = models.IntegerField()
-    gender = models.ForeignKey(Gender, on_delete=models.CASCADE)
-    nationality = models.ForeignKey(Nationality, on_delete=models.CASCADE)
+    gender = models.CharField(max_length=200, null=True, choices=GENDER)
+    nationality = models.CharField(max_length=200, null=True, choices=NATIONALITY)
     case = models.ForeignKey(Case, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
@@ -75,12 +73,58 @@ class IndirectBenef(models.Model):
 
 
 class LogEntry(models.Model):
+    MONTH = (
+        ('January', 'January'),
+        ('February', 'February'),
+        ('March', 'March'),
+        ('April', 'April'),
+        ('May', 'May'),
+        ('June', 'June'),
+        ('July', 'July'),
+        ('August', 'August'),
+        ('September', 'September'),
+        ('October', 'October'),
+        ('November', 'November'),
+        ('December', 'December'),
+    )
+    
+    CASETYPE = (
+        ('Individual', 'Individual'),
+        ('Family', 'Family'),
+    )
+
+    GENDER = (
+        ('Male', 'Male'),
+        ('Female', 'Female'),
+    )
+
+    CASESTATUS = (
+        ('New', 'New'),
+        ('Ongoing', 'Ongoing'),
+        ('Inactive', 'Inactive'),
+        ('Closed', 'Closed'),
+    )
+    
+    NATIONALITY = (
+        ('Syria', 'Syria'),
+        ('Sudan', 'Sudan'),
+        ('S. Sudan', 'S. Sudan'),
+        ('Ethiopia', 'Ethiopia'),
+        ('Iraq', 'Iraq'),
+        ('Somalia', 'Somalia'),
+        ('Eritrea', 'Eritrea'),
+        ('Yemen', 'Yemen'),
+        ('Comoros', 'Comoros'),
+        ('Cameron', 'Cameron'),
+    )
+
     id = models.AutoField(primary_key=True)
-    month = models.ForeignKey(Month, on_delete=models.CASCADE)
+    month = models.CharField(max_length=200, null=True, choices=MONTH)
     case = models.ForeignKey(Case, on_delete=models.CASCADE)
-    casestatus = models.ForeignKey(CaseStatus, on_delete=models.CASCADE)
-    casetype = models.ForeignKey(CaseType, on_delete=models.CASCADE)
-    dfullname = models.CharField(max_length=50)
-    dage = models.IntegerField(null=True)
-    dgender = models.ForeignKey(Gender, on_delete=models.CASCADE, null=True)
-    dnationality = models.ForeignKey(Nationality, on_delete=models.CASCADE, null=True)
+    casestatus = models.CharField(max_length=200, null=True, choices=CASESTATUS)
+    casetype = models.CharField(max_length=200, null=True, choices=CASETYPE)
+    fullname = models.CharField(max_length=50)
+    age = models.IntegerField(null=True)
+    gender = models.CharField(max_length=200, null=True, choices=GENDER)
+    nationality = models.CharField(max_length=200, null=True, choices=NATIONALITY)
+
