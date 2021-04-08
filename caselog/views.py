@@ -326,7 +326,7 @@ class LogEntriesView(TemplateView):
 
 
     def get(self, request, id=None, *args, **kwargs):
-        logentries = LogEntry.objects.filter(month__exact=1).prefetch_related('case')
+        logentries = LogEntry.objects.filter(month__exact="January").prefetch_related('case')
 
         query_statistics_new_cases = self.query_statistics_cases_body + " WHERE \
             logentry.month = 'January' AND logentry.casestatus = 'New' \
