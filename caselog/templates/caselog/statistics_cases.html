@@ -5,34 +5,60 @@
   <br>
   
   <h4>STATISTICS - NEW - Cases</h4>
-  <table class="table table table-sm shade_last_row" style="text-align: center">
+  <table class="table table table-sm shade_last_row table-bordered" style="text-align: center;">
       <thead class="table-light">
           <tr>
-              <th>Nationality</th>
-              <th>Total # of Cases</th>
-              <th>0-5</th>
-              <th>6-9</th>
-              <th>10-14</th>
-              <th>15-17</th>
-              <th>18-24</th>
-              <th>25-49</th>
-              <th>50-59</th>
-              <th>+60</th>
+              <th rowspan="2">Nationality</th>
+              <th rowspan="2">Total # of Cases</th>
+              <th colspan="2">0-5</th>
+              <th colspan="2">6-9</th>
+              <th colspan="2">10-14</th>
+              <th colspan="2">15-17</th>
+              <th colspan="2">18-24</th>
+              <th colspan="2">25-49</th>
+              <th colspan="2">50-59</th>
+              <th colspan="2">+60</th>
           </tr>
+          <tr>
+            <th>M</th>
+            <th>F</th>
+            <th>M</th>
+            <th>F</th>
+            <th>M</th>
+            <th>F</th>
+            <th>M</th>
+            <th>F</th>
+            <th>M</th>
+            <th>F</th>
+            <th>M</th>
+            <th>F</th>
+            <th>M</th>
+            <th>F</th>
+            <th>M</th>
+            <th>F</th>
+        </tr>
       </thead>
       <tbody>
         {% for stat in newstats %}
             <tr>
               <td>{{ stat.nationality }}</td>
               <td>{{ stat.total }}</td>
-              <td>{{ stat.age_0_5 }}</td>
-              <td>{{ stat.age_6_9 }}</td>
-              <td>{{ stat.age_10_14 }}</td>
-              <td>{{ stat.age_15_17 }}</td>
-              <td>{{ stat.age_18_24 }}</td>
-              <td>{{ stat.age_25_49 }}</td>
-              <td>{{ stat.age_50_59 }}</td>
-              <td>{{ stat.age_gt60 }}</td>
+              <td>{{ stat.age_0_5_M }}</td>
+              <td>{{ stat.age_0_5_F }}</td>
+              <td>{{ stat.age_6_9_M }}</td>
+              <td>{{ stat.age_6_9_F }}</td>
+              <td>{{ stat.age_10_14_M }}</td>
+              <td>{{ stat.age_10_14_F }}</td>
+              <td>{{ stat.age_15_17_M }}</td>
+              <td>{{ stat.age_15_17_F }}</td>
+              <td>{{ stat.age_18_24_M }}</td>
+              <td>{{ stat.age_18_24_F }}</td>
+              <td>{{ stat.age_25_49_M }}</td>
+              <td>{{ stat.age_25_49_F }}</td>
+              <td>{{ stat.age_50_59_M }}</td>
+              <td>{{ stat.age_50_59_F }}</td>
+              <td>{{ stat.age_gt60_M }}</td>
+              <td>{{ stat.age_gt60_F }}</td>
             </tr>
           {% endfor %}
       </tbody>
@@ -42,35 +68,62 @@
   <br>
 
   <h4>STATISTICS - ACTIVE - Cases</h4>
-  <table class="table table table-sm shade_last_row" style="text-align: center">
-      <thead class="table-light">
-          <tr>
-              <th>Nationality</th>
-              <th>Total # of Cases</th>
-              <th>0-5</th>
-              <th>6-9</th>
-              <th>10-14</th>
-              <th>15-17</th>
-              <th>18-24</th>
-              <th>25-49</th>
-              <th>50-59</th>
-              <th>+60</th>
-          </tr>
-      </thead>
+  <table class="table table table-sm shade_last_row table-bordered" style="text-align: center">
+    <thead class="table-light">
+      <tr>
+          <th rowspan="2">Nationality</th>
+          <th rowspan="2">Total # of Cases</th>
+          <th colspan="2">0-5</th>
+          <th colspan="2">6-9</th>
+          <th colspan="2">10-14</th>
+          <th colspan="2">15-17</th>
+          <th colspan="2">18-24</th>
+          <th colspan="2">25-49</th>
+          <th colspan="2">50-59</th>
+          <th colspan="2">+60</th>
+      </tr>
+      <tr>
+        <th>M</th>
+        <th>F</th>
+        <th>M</th>
+        <th>F</th>
+        <th>M</th>
+        <th>F</th>
+        <th>M</th>
+        <th>F</th>
+        <th>M</th>
+        <th>F</th>
+        <th>M</th>
+        <th>F</th>
+        <th>M</th>
+        <th>F</th>
+        <th>M</th>
+        <th>F</th>
+    </tr>
+  </thead>
       <tbody>
         {% for stat in activestats %}
             <tr>
-              <td>{{ stat.nationality }}</td>
-              <td>{{ stat.total }}</td>
-              <td>{{ stat.age_0_5 }}</td>
-              <td>{{ stat.age_6_9 }}</td>
-              <td>{{ stat.age_10_14 }}</td>
-              <td>{{ stat.age_15_17 }}</td>
-              <td>{{ stat.age_18_24 }}</td>
-              <td>{{ stat.age_25_49 }}</td>
-              <td>{{ stat.age_50_59 }}</td>
-              <td>{{ stat.age_gt60 }}</td>
-            </tr>
+              <tr>
+                <td>{{ stat.nationality }}</td>
+                <td>{{ stat.total }}</td>
+                <td>{{ stat.age_0_5_M }}</td>
+                <td>{{ stat.age_0_5_F }}</td>
+                <td>{{ stat.age_6_9_M }}</td>
+                <td>{{ stat.age_6_9_F }}</td>
+                <td>{{ stat.age_10_14_M }}</td>
+                <td>{{ stat.age_10_14_F }}</td>
+                <td>{{ stat.age_15_17_M }}</td>
+                <td>{{ stat.age_15_17_F }}</td>
+                <td>{{ stat.age_18_24_M }}</td>
+                <td>{{ stat.age_18_24_F }}</td>
+                <td>{{ stat.age_25_49_M }}</td>
+                <td>{{ stat.age_25_49_F }}</td>
+                <td>{{ stat.age_50_59_M }}</td>
+                <td>{{ stat.age_50_59_F }}</td>
+                <td>{{ stat.age_gt60_M }}</td>
+                <td>{{ stat.age_gt60_F }}</td>
+              </tr>
           {% endfor %}
       </tbody>
   </table>

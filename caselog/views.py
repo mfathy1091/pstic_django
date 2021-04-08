@@ -210,14 +210,22 @@ class LogEntriesView(TemplateView):
         logentry.id, \
         logentry.nationality,\
         COUNT(logentry.id) AS total, \
-        sum(case when logentry.age > 0 AND logentry.age <= 5 Then 1 else 0 end) As age_0_5, \
-        sum(case when logentry.age >= 6 AND logentry.age <= 9 Then 1 else 0 end) As age_6_9, \
-        sum(case when logentry.age >= 10 AND logentry.age <= 14 Then 1 else 0 end) As age_10_14, \
-        sum(case when logentry.age >= 15 AND logentry.age <= 17 Then 1 else 0 end) As age_15_17, \
-        sum(case when logentry.age >= 18 AND logentry.age <= 24 Then 1 else 0 end) As age_18_24, \
-        sum(case when logentry.age >= 25 AND logentry.age <= 49 Then 1 else 0 end) As age_25_49, \
-        sum(case when logentry.age >= 50 AND logentry.age <= 59 Then 1 else 0 end) As age_50_59, \
-        sum(case when logentry.age >= 60 Then 1 else 0 end) As age_gt60 \
+        sum(case when logentry.age > 0 AND logentry.age <= 5 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_0_5_M, \
+        sum(case when logentry.age > 0 AND logentry.age <= 5 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_0_5_F, \
+        sum(case when logentry.age >= 6 AND logentry.age <= 9 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_6_9_M, \
+        sum(case when logentry.age >= 6 AND logentry.age <= 9 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_6_9_F, \
+        sum(case when logentry.age >= 10 AND logentry.age <= 14 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_10_14_M, \
+        sum(case when logentry.age >= 10 AND logentry.age <= 14 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_10_14_F, \
+        sum(case when logentry.age >= 15 AND logentry.age <= 17 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_15_17_M, \
+        sum(case when logentry.age >= 15 AND logentry.age <= 17 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_15_17_F, \
+        sum(case when logentry.age >= 18 AND logentry.age <= 24 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_18_24_M, \
+        sum(case when logentry.age >= 18 AND logentry.age <= 24 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_18_24_F, \
+        sum(case when logentry.age >= 25 AND logentry.age <= 49 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_25_49_M, \
+        sum(case when logentry.age >= 25 AND logentry.age <= 49 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_25_49_F, \
+        sum(case when logentry.age >= 50 AND logentry.age <= 59 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_50_59_M, \
+        sum(case when logentry.age >= 50 AND logentry.age <= 59 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_50_59_F, \
+        sum(case when logentry.age >= 60 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_gt60_M, \
+        sum(case when logentry.age >= 60 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_gt60_F \
     FROM caselog_logentry AS logentry"
 
 
@@ -226,14 +234,22 @@ class LogEntriesView(TemplateView):
             logentry.id, \
             \"TOTAL\", \
             COUNT(logentry.id) AS total, \
-            sum(case when logentry.age > 0 AND logentry.age <= 5 Then 1 else 0 end) As age_0_5, \
-            sum(case when logentry.age >= 6 AND logentry.age <= 9 Then 1 else 0 end) As age_6_9, \
-            sum(case when logentry.age >= 10 AND logentry.age <= 14 Then 1 else 0 end) As age_10_14, \
-            sum(case when logentry.age >= 15 AND logentry.age <= 17 Then 1 else 0 end) As age_15_17, \
-            sum(case when logentry.age >= 18 AND logentry.age <= 24 Then 1 else 0 end) As age_18_24, \
-            sum(case when logentry.age >= 25 AND logentry.age <= 49 Then 1 else 0 end) As age_25_49, \
-            sum(case when logentry.age >= 50 AND logentry.age <= 59 Then 1 else 0 end) As age_50_59, \
-            sum(case when logentry.age >= 60 Then 1 else 0 end) As age_gt60 \
+            sum(case when logentry.age > 0 AND logentry.age <= 5 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_0_5_M, \
+            sum(case when logentry.age > 0 AND logentry.age <= 5 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_0_5_F, \
+            sum(case when logentry.age >= 6 AND logentry.age <= 9 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_6_9_M, \
+            sum(case when logentry.age >= 6 AND logentry.age <= 9 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_6_9_F, \
+            sum(case when logentry.age >= 10 AND logentry.age <= 14 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_10_14_M, \
+            sum(case when logentry.age >= 10 AND logentry.age <= 14 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_10_14_F, \
+            sum(case when logentry.age >= 15 AND logentry.age <= 17 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_15_17_M, \
+            sum(case when logentry.age >= 15 AND logentry.age <= 17 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_15_17_F, \
+            sum(case when logentry.age >= 18 AND logentry.age <= 24 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_18_24_M, \
+            sum(case when logentry.age >= 18 AND logentry.age <= 24 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_18_24_F, \
+            sum(case when logentry.age >= 25 AND logentry.age <= 49 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_25_49_M, \
+            sum(case when logentry.age >= 25 AND logentry.age <= 49 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_25_49_F, \
+            sum(case when logentry.age >= 50 AND logentry.age <= 59 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_50_59_M, \
+            sum(case when logentry.age >= 50 AND logentry.age <= 59 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_50_59_F, \
+            sum(case when logentry.age >= 60 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_gt60_M, \
+            sum(case when logentry.age >= 60 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_gt60_F \
         FROM caselog_logentry AS logentry"
 
 
