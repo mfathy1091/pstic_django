@@ -17,3 +17,24 @@
   background: #f8f9fa !important;
   font-weight: bold!important;
 }
+
+#logo{
+}
+
+body{
+    background-color: #ebeff5;
+}
+
+
+#total-orders{
+    background-color: #4cb4c7;
+}
+
+
+#orders-delivered{
+    background-color: #7abecc;
+}
+
+#orders-pending{
+    background-color: #7CD1C0;
+}

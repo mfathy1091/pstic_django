@@ -18,6 +18,7 @@ import os
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 
 
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
@@ -136,6 +137,7 @@ USE_TZ = True
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
+MEDIA_URL = '/images/'
 STATICFILES_DIRS = [ os.path.join(BASE_DIR, 'static'), ]
 
 
