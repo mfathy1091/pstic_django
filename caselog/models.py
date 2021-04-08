@@ -118,6 +118,26 @@ class LogEntry(models.Model):
         ('Cameron', 'Cameron'),
     )
 
+    REFERRALSOURCE = (
+        ('UNHCR', 'UNHCR'),
+        ('Community', 'Community'),
+        ('SCI', 'SCI'),
+        ('StARS', 'StARS'),
+        ('Tdh', 'Tdh'),
+        ('PSTIC Hot Line', 'PSTIC Hot Line'),
+        ('Egypt Refuge', 'Egypt Refuge'),
+        ('IOM', 'IOM'),
+    )
+
+    LOCATION = (
+        ('Alexandria', 'Alexandria'),
+        ('Damietta', 'Damietta'),
+        ('Mansoura', 'Mansoura'),
+        ('6th of October', '6th of October'),
+        ('Ain Shams', 'Ain Shams'),
+        ('10th of Ramadan', '10th of Ramadan'),
+    )
+
     id = models.AutoField(primary_key=True)
     month = models.CharField(max_length=200, null=True, choices=MONTH)
     case = models.ForeignKey(Case, on_delete=models.CASCADE)
@@ -127,4 +147,7 @@ class LogEntry(models.Model):
     age = models.IntegerField(null=True)
     gender = models.CharField(max_length=200, null=True, choices=GENDER)
     nationality = models.CharField(max_length=200, null=True, choices=NATIONALITY)
+    phone = models.CharField(max_length=50, null=True)
+    location = models.CharField(max_length=50, null=True, choices=LOCATION)
+    referralsource = models.CharField(max_length=200, null=True, choices=REFERRALSOURCE)
 

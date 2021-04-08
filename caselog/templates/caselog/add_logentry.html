@@ -59,8 +59,30 @@
     <div class="form-group">
       <select class="custom-select" placeholder="Nationality" name="nationality">
         <option selected >Select Nationality</option>
-        {% for nationality in nationalities %}
-        <option value="{{nationality.1}}">{{nationality.1}}</option>
+        {% for x in nationalities %}
+        <option value="{{x.1}}">{{x.1}}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <input type="number" class="form-control" aria-describedby="emailHelp" placeholder="Phone Number" name="phone" value="{{ phone }}">
+    </div>
+  
+    <div class="form-group">
+      <select class="custom-select" placeholder="Location" name="location">
+        <option selected >Select Location</option>
+        {% for x in locations %}
+        <option value="{{x.1}}">{{x.1}}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <select class="custom-select" placeholder="Referral Source" name="referralsource">
+        <option selected >Select Referral Source</option>
+        {% for x in referralsources %}
+        <option value="{{x.1}}">{{x.1}}</option>
         {% endfor %}
       </select>
     </div>

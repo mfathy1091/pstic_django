@@ -15,8 +15,8 @@ class PSWorkersView(TemplateView):
 
     def get(self, request, id=None, *args, **kwargs):
         psworkers = PsWorker.objects.all()
-        conselectedmonth = {'psworkers': psworkers}
-        return render(request, self.template_name, conselectedmonth)
+        context = {'psworkers': psworkers}
+        return render(request, self.template_name, context)
 
 
 
@@ -30,13 +30,13 @@ class AddPsWorkerView(TemplateView):
         #  define a blank form to render it
         #addpsworker_form = PSWorkerForm()
 
-        conselectedmonth = {
+        context = {
         'psworkers': self.psworkers,
         'genders': self.genders,
         'nationalities': self.nationalities,
         #'addpsworker_form':addpsworker_form,
         }
-        return render(request, self.template_name, conselectedmonth)
+        return render(request, self.template_name, context)
     
     def post(self, request):
         addpsworker_form = PSWorkerForm(request.POST)
@@ -55,7 +55,7 @@ class AddPsWorkerView(TemplateView):
             
             messages.success(request, ('There was an error'))
         
-            conselectedmonthAndRetriedvedFields = {
+            contextAndRetriedvedFields = {
                 'psworkers': self.psworkers,
                 'genders': self.genders,
                 'nationalities': self.nationalities,
@@ -65,7 +65,7 @@ class AddPsWorkerView(TemplateView):
                 'gender': gender,
                 'nationality': nationality,
                 }
-            return render(request, self.template_name, conselectedmonthAndRetriedvedFields)
+            return render(request, self.template_name, contextAndRetriedvedFields)
 
 class AddCaseView(TemplateView):
     template_name = 'caselog/add_case.html'
@@ -77,7 +77,7 @@ class AddCaseView(TemplateView):
     psworkers = PsWorker.objects.all()
 
     def get(self, request):
-        conselectedmonth = {
+        context = {
         'case': self.cases,
         'casetypes': self.casetypes,
         'months': self.months,
@@ -85,10 +85,10 @@ class AddCaseView(TemplateView):
         'nationalities': self.nationalities,
         'psworkers': self.psworkers,
         }
-        return render(request, self.template_name, conselectedmonth)
+        return render(request, self.template_name, context)
 
     def post(self, request):
-        conselectedmonth = {
+        context = {
         'case': self.cases,
         'casetypes': self.casetypes,
         'months': self.months,
@@ -118,7 +118,7 @@ class AddCaseView(TemplateView):
             case_obj.save()
 
             messages.success(request, ('Added Successfully'))
-            return render(request, self.template_name, conselectedmonth)
+            return render(request, self.template_name, context)
             #return redirect ('caselog-cases')
         else:
             print(form.errors)
@@ -131,7 +131,7 @@ class AddCaseView(TemplateView):
             
             messages.success(request, ('There was an error'))
 
-            conselectedmonthAndRetriedvedFields = {
+            contextAndRetriedvedFields = {
             'case': self.cases,
             'casetypes': self.casetypes,
             'months': self.months,
@@ -143,57 +143,7 @@ class AddCaseView(TemplateView):
             'fullname': fullname,
             'age': age,
             }
-        return render(request, self.template_name, conselectedmonthAndRetriedvedFields)
-
-
-
-class AddLogEntry(TemplateView):
-    template_name = 'caselog/add_worker.html'
-    psworkers = PsWorker.objects.all()
-    genders = LogEntry.GENDER
-    nationalities = LogEntry.NATIONALITY
-
-    def get(self, request):
-        #  define a blank form to render it
-        #addpsworker_form = PSWorkerForm()
-
-        conselectedmonth = {
-        'psworkers': self.psworkers,
-        'genders': self.genders,
-        'nationalities': self.nationalities,
-        #'addpsworker_form':addpsworker_form,
-        }
-        return render(request, self.template_name, conselectedmonth)
-    
-    def post(self, request):
-        addpsworker_form = PSWorkerForm(request.POST)
-        if addpsworker_form.is_valid():
-            addpsworker_form.save()
-            messages.success(request, ('Added Successfully'))
-            return redirect ('caselog-workers')
-        else:
-            # Retrieved fields
-            fullname = request.POST['fullname']
-            age = request.POST['age']
-            gender = request.POST['gender']
-            nationality = request.POST['nationality']
-            #selectedmonth = addpsworker_form.cleaned_data['fullname']
-            #addpsworker_form = PSWorkerForm(request.POST) # refills the form if you instatioated the form naem in html form tag and removed the hard coded form
-            
-            messages.success(request, ('There was an error'))
-        
-            conselectedmonthAndRetriedvedFields = {
-                'psworkers': self.psworkers,
-                'genders': self.genders,
-                'nationalities': self.nationalities,
-                #'addpsworker_form': addpsworker_form,
-                'fullname': fullname,
-                'age': age,
-                'gender': gender,
-                'nationality': nationality,
-                }
-            return render(request, self.template_name, conselectedmonthAndRetriedvedFields)
-
+        return render(request, self.template_name, contextAndRetriedvedFields)
 
 
 class CaseDetail(TemplateView):
@@ -207,12 +157,12 @@ class CaseDetail(TemplateView):
         print(selectedlogentry_obj)
         
 
-        conselectedmonth = {
+        context = {
                     'selectedlogentry': selectedlogentry_obj,
                     'selectedIndirectBenefs': selectedIndirectBenefs_qs,
                     'count': count,
                     }
-        return render(request, self.template_name, conselectedmonth)
+        return render(request, self.template_name, context)
 
 
 
@@ -231,12 +181,12 @@ class CaseView(TemplateView):
         for case in self.cases:
             print(case.id, case.filenum)
 
-        conselectedmonth = {
+        context = {
                     'cases': self.cases,
                     'month_form': month_form,
                     'months': self.months,
                     }
-        return render(request, self.template_name, conselectedmonth)
+        return render(request, self.template_name, context)
 
     def post(self, request, id=None, *args, **kwargs):
         month_form = MonthForm(request.POST)
@@ -244,13 +194,13 @@ class CaseView(TemplateView):
             selectedmonth = month_form.cleaned_data['month']
             #month_form = MonthForm() # to balnk the form
 
-        conselectedmonth = {
+        context = {
                     'cases': self.cases,
                     'month_form': month_form,
                     'selectedmonth': selectedmonth,
                     'months': self.months,
                     }
-        return render(request, self.template_name, conselectedmonth)
+        return render(request, self.template_name, context)
 
 
         
@@ -343,7 +293,7 @@ class LogEntriesView(TemplateView):
 
         month_form = MonthForm()
 
-        conselectedmonth = {
+        context = {
                     'logentries': logentries,
                     'month_form': month_form,
                     'months': self.months,
@@ -352,7 +302,7 @@ class LogEntriesView(TemplateView):
                     'activestats': rs_activestats,
                     'selectedmonth': 'January',
                     }
-        return render(request, self.template_name, conselectedmonth)
+        return render(request, self.template_name, context)
 
 
     def post(self, request, id=None, *args, **kwargs):
@@ -375,7 +325,7 @@ class LogEntriesView(TemplateView):
             rs_newstats = LogEntry.objects.raw(query_statistics_new_cases)
             rs_activestats = LogEntry.objects.raw(query_statistics_active_cases)
             
-            conselectedmonth = {
+            context = {
                     'cases': self.cases,
                     'logentries': logentries,
                     'month_form': month_form,
@@ -384,16 +334,16 @@ class LogEntriesView(TemplateView):
                     'activestats': rs_activestats,
                     'selectedmonth': selectedmonth,
                     }
-            return render(request, self.template_name, conselectedmonth)
+            return render(request, self.template_name, context)
         else:
             messages.success(request, ('There was an error'))
         
-            conselectedmonthAndRetriedvedFields = {
+            contextAndRetriedvedFields = {
                     'cases': self.cases,
                     'month_form': month_form,
                     'months': self.months,
                     }
-            return render(request, self.template_name, conselectedmonthAndRetriedvedFields)
+            return render(request, self.template_name, contextAndRetriedvedFields)
 
     
 
@@ -405,22 +355,26 @@ class AddLogEntryView(TemplateView):
     months = LogEntry.MONTH
     genders = LogEntry.GENDER
     nationalities = LogEntry.NATIONALITY
+    locations = LogEntry.LOCATION
+    referralsources = LogEntry.REFERRALSOURCE
     psworkers = PsWorker.objects.all()
 
     def get(self, request):
-        conselectedmonth = {
+        context = {
         'case': self.cases,
         'casetypes': self.casetypes,
         'casestatuses': self.casestatuses,
         'months': self.months,
         'genders': self.genders,
         'nationalities': self.nationalities,
+        'locations': self.locations,
+        'referralsources': self.referralsources,
         'psworkers': self.psworkers,
         }
-        return render(request, self.template_name, conselectedmonth)
+        return render(request, self.template_name, context)
 
     def post(self, request):
-        conselectedmonth = {
+        context = {
         'case': self.cases,
         'casetypes': self.casetypes,
         'casestatuses': self.casestatuses,
@@ -445,42 +399,47 @@ class AddLogEntryView(TemplateView):
             fullname = form.cleaned_data.get('fullname')
             gender = form.cleaned_data.get('gender')
             nationlaity = form.cleaned_data.get('nationality')
-            
+            phone = form.cleaned_data.get('phone')
+            location = form.cleaned_data.get('location')
+            referralsource = form.cleaned_data.get('referralsource')
 
             # 1) create, fill, and save CaseObject then LogEntry Object            
             case_obj = Case(filenum= filenum)
             case_obj.save()
             
-            logentry_obj = LogEntry(case=case_obj, casestatus= casestatus, month= month, casetype=casetype, age= age, fullname= fullname, gender=gender, nationality=nationlaity)
+            logentry_obj = LogEntry(case=case_obj, casestatus= casestatus, month= month, casetype=casetype, age= age, fullname= fullname, gender=gender, nationality=nationlaity, phone=phone, location=location, referralsource=referralsource)
             logentry_obj.save()
 
             messages.success(request, ('Added Successfully'))
-            return render(request, self.template_name, conselectedmonth)
+            return render(request, self.template_name, context)
             #return redirect ('caselog-cases')
         else:
             print(form.errors)
             filenum = request.POST['filenum']
             fullname = request.POST['fullname']
             age = request.POST['age']
+            phone = request.POST['phone']
             #gender = request.POST['gender']
             #nationality = request.POST['nationality']
             #addpsworker_form = PSWorkerForm(request.POST) # refills the form if you instatioated the form naem in html form tag and removed the hard coded form
             
             messages.success(request, ('There was an error'))
 
-            conselectedmonthAndRetriedvedFields = {
+            contextAndRetriedvedFields = {
             'case': self.cases,
             'casetypes': self.casetypes,
             'months': self.months,
             'genders': self.genders,
             'nationalities': self.nationalities,
+            'locations': self.locations,
+            'referralsources': self.referralsources,
             'psworkers': self.psworkers,
             
             'filenum': filenum,
             'fullname': fullname,
             'age': age,
             }
-        return render(request, self.template_name, conselectedmonthAndRetriedvedFields)
+        return render(request, self.template_name, contextAndRetriedvedFields)
             
 
 
@@ -489,10 +448,10 @@ def beneficiaries(request):
     rs_statistics_new_all_benificiaries = getResultSet(query_statistics_new_all_benificiaries)
     rs_statistics_active_all_benificiaries = getResultSet(query_statistics_active_all_benificiaries)
 
-    conselectedmonth = {
+    context = {
             'beneficiaries': rs_beneficiaries,
             'statistics_new_all_benificiaries': rs_statistics_new_all_benificiaries,
             'statistics_active_all_benificiaries': rs_statistics_active_all_benificiaries,
             }
 
-    return render(request, 'caselog/beneficiaries.html', conselectedmonth)
+    return render(request, 'caselog/beneficiaries.html', context)

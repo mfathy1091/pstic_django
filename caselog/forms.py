@@ -44,6 +44,9 @@ class AddLogEntryForm(forms.Form):
     age = forms.IntegerField()
     gender = forms.CharField(max_length=100)
     nationality = forms.CharField(max_length=100)
+    phone = forms.CharField(max_length=100)
+    location = forms.CharField(max_length=100)
+    referralsource = forms.CharField(max_length=100)
     
 
 class FilterByMonthForm(forms.Form):
