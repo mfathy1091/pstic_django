@@ -1,15 +1,12 @@
 
-<div class="container">
   {% block content %}
 
   <br>
   
-  <h4>STATISTICS - NEW - Cases</h4>
-  <table class="table table table-sm shade_last_row table-bordered" style="text-align: center;">
-      <thead class="table-light">
+  <table class="table table table-sm shade_last_row table-bordered table-info" style="text-align: center;">
+      <thead>
           <tr>
-              <th rowspan="2">Nationality</th>
-              <th rowspan="2">Total # of Cases</th>
+              <th colspan="2">NEW CASES</th>
               <th colspan="2">0-5</th>
               <th colspan="2">6-9</th>
               <th colspan="2">10-14</th>
@@ -20,6 +17,8 @@
               <th colspan="2">+60</th>
           </tr>
           <tr>
+            <th>Nationality</th>
+            <th>Total # of Cases</th>
             <th>M</th>
             <th>F</th>
             <th>M</th>
@@ -67,12 +66,10 @@
 
   <br>
 
-  <h4>STATISTICS - ACTIVE - Cases</h4>
-  <table class="table table table-sm shade_last_row table-bordered" style="text-align: center">
-    <thead class="table-light">
+  <table class="table table table-sm shade_last_row table-bordered table-info" style="text-align: center">
+    <thead>
       <tr>
-          <th rowspan="2">Nationality</th>
-          <th rowspan="2">Total # of Cases</th>
+          <th colspan="2">ACTIVE CASES</th>
           <th colspan="2">0-5</th>
           <th colspan="2">6-9</th>
           <th colspan="2">10-14</th>
@@ -83,6 +80,8 @@
           <th colspan="2">+60</th>
       </tr>
       <tr>
+        <th>Nationality</th>
+        <th>Total # of Cases</th>
         <th>M</th>
         <th>F</th>
         <th>M</th>
@@ -131,4 +130,3 @@
 
 
   {% endblock content %}
-</div>
