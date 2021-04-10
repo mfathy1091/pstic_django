@@ -1,0 +1,134 @@
+
+{% extends 'caselog/base.html' %}
+ 
+{% block content %}
+
+	<br>
+
+<div class="row">
+	<div class="col-md">
+		<div class="card card-body">
+			<h5>PS Worker: {{psworker.fullname}}</h5>
+			<hr>
+			<a class="btn btn-outline-info  btn-sm btn-block" href="">Update PS Worker</a>
+			<a class="btn btn-outline-danger  btn-sm btn-block" href="">Delete PS Worker</a>
+
+		</div>
+	</div>
+
+	<div class="col-md">
+		<div class="card card-body">
+			<h5>Contact Information</h5>
+			<hr>
+			<p>Email: {{psworker.email}}</p>
+			<p>Phone: {{psworker.phone}}</p>
+		</div>
+	</div>
+
+	<div class="col-md">
+		<div class="card card-body">
+			<h5>Total Entries</h5>
+			<hr>
+			<h1 style="text-align: center;padding: 10px">{{psworker_logentries_count}}</h1>
+		</div>
+	</div>
+</div>
+
+
+<br>
+<div class="row">
+	<div class="col">
+		<div class="card card-body">
+			<form method="get">
+
+		    <button class="btn btn-primary" type="submit">Search</button>
+		  </form>
+		</div>
+	</div>
+	
+</div>
+<br>
+
+<div class="dropdown">
+	<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+	  Select Month
+	</button>
+	<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+	  <li><a class="dropdown-item" href="#">All Months</a></li>
+	  <li><hr class="dropdown-divider"></li>
+	  <li><a class="dropdown-item" href="#">January</a></li>
+	  <li><a class="dropdown-item" href="#">February</a></li>
+	  <li><a class="dropdown-item" href="#">March</a></li>
+	  <li><a class="dropdown-item" href="#">April</a></li>
+	</ul>
+  </div>
+
+<div class="row">
+	<div class="col">
+		<h3>Monthly Log: {{ selectedmonth }} Cases</h1>
+		<div class="card card-body">
+			<form method="get">
+
+				{% csrf_token %}
+				<!-- {{ month_form.as_p }} -->
+			
+				<div class="form-group">
+					<select class="custom-select" placeholder="Month" name="month">
+						<option selected >Select Month</option>
+						{% for month in months %}
+						<option value="{{month.1}}">{{month.1}}</option>
+						{% endfor %}
+					</select>
+				</div>
+
+		    <button class="btn btn-primary" type="submit">Select</button>
+		  </form>
+		</div>
+	</div>
+	
+</div>
+<br>
+
+<div class="row">
+	<div class="col-md">
+		<div class="card card-body">
+			<table class="table table-sm" style="border-collapse:collapse; text-align: center;">
+				<tr>
+					<th></th>
+					<th>Month</th>
+					<th>Case Status</th>
+					<th>File #</th>
+					<th>Case Type</th>
+					<th>Direct Benef</th>
+					<th>Age</th>
+					<th>Gender</th>
+					<th>Nationality</th>
+					<th>Phone</th>
+					<th>Location</th>
+					<th>Referrall Source</th>
+					<th>Update</th>
+					<th>Remove</th>
+				</tr>
+				{% for entry in psworker_logentries %}
+				<tr>
+					<td><a href="{% url 'case-detail' entry.id %}">SEE DETAILS</a></td>
+					<td>{{ entry.month }}</td>
+					<td>{{ entry.casestatus }}</td>
+					<td>{{ entry.case.filenum }}</td>
+					<td>{{ entry.casetype }}</td>
+					<td>{{ entry.fullname }}</td>
+					<td>{{ entry.age }}</td>
+					<td>{{ entry.gender }}</td>
+					<td>{{ entry.nationality }}</td>
+					<td>{{ entry.phone }}</td>
+					<td>{{ entry.location }}</td>
+					<td>{{ entry.referralsource }}</td>
+					<td><a class="btn btn-sm btn-info" href="">Update</a></td>
+					<td><a class="btn btn-sm btn-danger" href="">Remove</a></td>
+				{% endfor %}
+			</table>
+		</div>
+	</div>
+</div>
+
+{% endblock %}

@@ -8,9 +8,12 @@ class PSWorkerForm(forms.ModelForm):
         model = PsWorker
         fields = [
             'fullname',
+            'phone',
+            'email',
             'age',
             'gender',
-            'nationality'
+            'nationality',
+            'team',
         ]
 
 
@@ -47,6 +50,7 @@ class AddLogEntryForm(forms.Form):
     phone = forms.CharField(max_length=100)
     location = forms.CharField(max_length=100)
     referralsource = forms.CharField(max_length=100)
+    psworker = forms.CharField(max_length=100)
     
 
 class FilterByMonthForm(forms.Form):

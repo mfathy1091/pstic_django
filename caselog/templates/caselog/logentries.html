@@ -1,8 +1,10 @@
 {% extends "caselog/base.html" %}
 <div class="container">
   {% block content %}
+
+  
+
 	<h3>Monthly Log: {{ selectedmonth }} Cases</h1>
-	
 	<br>
 
 
@@ -12,10 +14,10 @@
 		
 			<div class="form-group">
 				<select class="custom-select" placeholder="Month" name="month">
-				<option selected >Select Month</option>
-				{% for month in months %}
-				<option value="{{month.1}}">{{month.1}}</option>
-				{% endfor %}
+					<option selected >Select Month</option>
+					{% for month in months %}
+					<option value="{{month.1}}">{{month.1}}</option>
+					{% endfor %}
 				</select>
 				<button type="submit">Select</button>
 			</div>

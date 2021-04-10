@@ -87,7 +87,14 @@
       </select>
     </div>
 
-
+    <div class="form-group">
+      <select class="custom-select" placeholder="PS Worker" name="psworker">
+        <option selected >Select PS Worker</option>
+        {% for worker in psworkers %}
+        <option value="{{worker.id}}">{{worker.fullname}}</option>
+        {% endfor %}
+      </select>
+    </div>
 
     <button type="Sign up" class="btn btn-secondary">Add Case</button>
 </form>

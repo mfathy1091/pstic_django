@@ -10,6 +10,11 @@ class PsWorker(models.Model):
         ('Male', 'Male'),
         ('Female', 'Female'),
     )
+
+    TEAM = (
+        ('NC', 'NC'),
+        ('Cairo', 'Cairo'),
+    )
     
     NATIONALITY = (
         ('Syria', 'Syria'),
@@ -26,9 +31,12 @@ class PsWorker(models.Model):
 
     id = models.AutoField(primary_key=True)
     fullname = models.CharField(max_length=50)
+    phone = models.CharField(max_length=200, null=True)
+    email = models.CharField(max_length=200, null=True)
     age = models.IntegerField()
     gender = models.CharField(max_length=200, null=True, choices=GENDER)
     nationality = models.CharField(max_length=200, null=True, choices=NATIONALITY)
+    team = models.CharField(max_length=200, null=True, choices=TEAM)
 
     def __str__(self):
         return self.fullname
@@ -150,4 +158,6 @@ class LogEntry(models.Model):
     phone = models.CharField(max_length=50, null=True)
     location = models.CharField(max_length=50, null=True, choices=LOCATION)
     referralsource = models.CharField(max_length=200, null=True, choices=REFERRALSOURCE)
+    psworker = models.ForeignKey(PsWorker, null=True, on_delete=models.SET_NULL)
+    
 

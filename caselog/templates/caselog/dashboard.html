@@ -1,0 +1,182 @@
+{% extends 'caselog/base.html' %}
+ 
+{% block content %}
+
+
+<br>
+
+<div class="row">
+	<h5>NC WORKERS</h5>
+	<hr>
+
+	<div class="col-md-8">
+		<div class="card card-body">
+			<a class="btn btn-primary  btn-sm btn-block" href="{% url 'caselog-addworker' %}">Add PS Worker</a>
+			<table class="table table-sm" >
+				<thead>
+					<tr>
+						<th></th>
+						<th>Name</th>
+						<th>January</th>
+						<th>February</th>
+						<th>March</th>
+						<th>April</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for row in stats_nc_workers %}
+					</tr>
+						<td><a class="btn btn-sm btn-info" href="{% url 'psworker' row.0 %}">View Cases</a></td>
+						<td>{{ row.1 }}</td>
+						<td>{{ row.2 }}</td>
+						<td>{{ row.3 }}</td>
+						<td>{{ row.4 }}</td>
+						<td>{{ row.5 }}</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+				<tfoot>
+					</tr>
+						<td></td>
+						<td>Total NC</td>
+						<td>{{ stats_nc_entriestotal.0.2 }}</td>
+						<td>{{ stats_nc_entriestotal.0.3 }}</td>
+						<td>{{ stats_nc_entriestotal.0.4 }}</td>
+						<td>{{ stats_nc_entriestotal.0.5 }}</td>
+					</tr>
+				</tfoot>
+
+			</table>
+		</div>
+	</div>
+
+	<div class="col-md-4">
+		<div class="card card-body">
+			<h5>Analysis</h5>
+			<hr>
+			<p>Target: 100 case</p>
+			<p>Acheived: 48</p>
+			<hr>
+			<h2 style="text-align: center;padding: 10px">{{psworker_logentries_count}} %</h1>
+
+		</div>
+	</div>
+
+</div>
+<br>
+<br>
+
+<div class="row">
+	<h5>CAIRO - ALL WORKERS</h5>
+	<hr>
+
+	<div class="col-md-8">
+		<div class="card card-body">
+			<a class="btn btn-primary  btn-sm btn-block" href="{% url 'caselog-addworker' %}">Add PS Worker</a>
+			<table class="table table-sm" >
+				<thead>
+					<tr>
+						<th></th>
+						<th>Name</th>
+						<th>January</th>
+						<th>February</th>
+						<th>March</th>
+						<th>April</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for row in stats_cairo_workers %}
+					</tr>
+						<td><a class="btn btn-sm btn-info" href="{% url 'psworker' row.0 %}">View Cases</a></td>
+						<td>{{ row.1 }}</td>
+						<td>{{ row.2 }}</td>
+						<td>{{ row.3 }}</td>
+						<td>{{ row.4 }}</td>
+						<td>{{ row.5 }}</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+				<tfoot>
+					</tr>
+						<td></td>
+						<td>Total Cairo</td>
+						<td>{{ stats_cairo_entriestotal.0.2 }}</td>
+						<td>{{ stats_cairo_entriestotal.0.3 }}</td>
+						<td>{{ stats_cairo_entriestotal.0.4 }}</td>
+						<td>{{ stats_cairo_entriestotal.0.5 }}</td>
+					</tr>
+				</tfoot>
+
+			</table>
+		</div>
+	</div>
+
+	<div class="col-md-4">
+		<div class="card card-body">
+			<h5>Analysis</h5>
+			<hr>
+			<p>Target: 1000 case</p>
+			<p>Acheived: 48</p>
+			<hr>
+			<h2 style="text-align: center;padding: 10px">{{psworker_logentries_count}} %</h1>
+
+		</div>
+	</div>
+
+</div>
+
+
+<br>
+<br>
+<br>
+
+
+<div class="row">
+	
+	<div class="col-md-12">
+		<h5>ALL CASES:</h5>
+		<hr>
+		<div class="card card-body">
+			<a class="btn btn-primary  btn-sm btn-block" href="{% url 'caselog-addlogentry' %}">Add Case</a>
+			<table class="table table-sm" style="border-collapse:collapse; text-align: center;">
+				<tr>
+					<th>Month</th>
+					<th>Case Status</th>
+					<th>File #</th>
+					<th>Case Type</th>
+					<th>Direct Benef</th>
+					<th>Age</th>
+					<th>Gender</th>
+					<th>Nationality</th>
+					<th>Phone</th>
+					<th>Location</th>
+					<th>Referrall Source</th>
+					<th>PS Worker</th>
+					<th>Update</th>
+					<th>Remove</th>
+				</tr>
+				{% for entry in allentries %}
+				<tr>
+					<td>{{ entry.month }}</td>
+					<td>{{ entry.casestatus }}</td>
+					<td>{{ entry.case.filenum }}</td>
+					<td>{{ entry.casetype }}</td>
+					<td>{{ entry.fullname }}</td>
+					<td>{{ entry.age }}</td>
+					<td>{{ entry.gender }}</td>
+					<td>{{ entry.nationality }}</td>
+					<td>{{ entry.phone }}</td>
+					<td>{{ entry.location }}</td>
+					<td>{{ entry.referralsource }}</td>
+					<td>{{ entry.psworker.fullname }}</td>
+					<td><a class="btn btn-sm btn-info" href="">Update</a></td>
+					<td><a class="btn btn-sm btn-danger" href="">Remove</a></td>
+				{% endfor %}
+			</table>
+		</div>
+	</div>
+
+</div>
+
+
+{% endblock %}
