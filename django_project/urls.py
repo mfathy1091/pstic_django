@@ -15,7 +15,7 @@ urlpatterns = [
     path('caselog/', include('caselog.urls')),
     path('__debug__/', include(debug_toolbar.urls)),
 
-    path('', include('accounts.urls')),
+    #path('', include('accounts.urls')),
 
 
     ]
