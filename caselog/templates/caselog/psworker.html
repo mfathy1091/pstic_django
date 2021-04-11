@@ -40,7 +40,7 @@
 	<div class="col">
 		<div class="card card-body">
 			<form method="get">
-				{{myFilter.form}}
+				{{myFilter.form.as_p}}
 		    <button class="btn btn-primary" type="submit">Search</button>
 		  </form>
 
@@ -65,7 +65,7 @@
 	</ul>
   </div>
   -->
-
+<!--
 <div class="row">
 	<div class="col">
 		<h3>Monthly Log: {{ selectedmonth }} Cases</h1>
@@ -73,7 +73,6 @@
 			<form method="get">
 
 				{% csrf_token %}
-				<!-- {{ month_form.as_p }} -->
 			
 				<div class="form-group">
 					<select class="custom-select" placeholder="Month" name="month">
@@ -90,6 +89,7 @@
 	</div>
 	
 </div>
+-->
 <br>
 
 <div class="row">
