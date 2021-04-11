@@ -10,16 +10,6 @@
 		<div class="card card-body">
 			<h5>PS Worker: {{psworker.fullname}}</h5>
 			<hr>
-			<a class="btn btn-outline-info  btn-sm btn-block" href="">Update PS Worker</a>
-			<a class="btn btn-outline-info  btn-sm btn-block" href="{% url 'createlogentry' psworker.id %}">Add Case</a>
-
-		</div>
-	</div>
-
-	<div class="col-md">
-		<div class="card card-body">
-			<h5>Contact Information</h5>
-			<hr>
 			<p>Email: {{psworker.email}}</p>
 			<p>Phone: {{psworker.phone}}</p>
 		</div>
@@ -95,6 +85,7 @@
 <div class="row">
 	<div class="col-md">
 		<div class="card card-body">
+			<a class="btn btn-primary  btn-sm btn-block" href="{% url 'createlogentry' psworker.id %}">ADD CASE</a>
 			<table class="table table-sm" style="border-collapse:collapse; text-align: center;">
 				<tr>
 					<th></th>
