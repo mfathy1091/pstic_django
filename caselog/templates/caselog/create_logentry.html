@@ -1,0 +1,16 @@
+
+{% extends 'caselog/base.html' %}
+
+{% block content %}
+  <h5>ADD PS WORKER</h5>
+  <hr style="width: 40rem;">
+  <div class="card card-body" style="width: 40rem;">
+      <form method="POST" action=".">
+        {% csrf_token %}
+      
+        {{ form.as_p }}
+      <button type="submit" class="btn btn-primary">Add Worker</button>
+    </form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'caselog/base.html' %}
+{% block content %}
+{% include 'caselog/status.html' %}
+
+
+<div class="row">
+    <div class="col-md">
+		<div class="card card-body">
+			<a class="btn btn-outline-info  btn-sm btn-block" href="">Add Case</a>
+
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-md">
+		<div class="card card-body">
+			<table class="table table-sm" style="border-collapse:collapse; text-align: center;">
+				<tr>
+					<th></th>
+					<th>Month</th>
+					<th>Case Status</th>
+					<th>File #</th>
+					<th>Case Type</th>
+					<th>Direct Benef</th>
+					<th>Age</th>
+					<th>Gender</th>
+					<th>Nationality</th>
+					<th>Phone</th>
+					<th>Location</th>
+					<th>Referrall Source</th>
+
+				</tr>
+				{% for entry in entries %}
+				<tr>
+					<td><a href="{% url 'case-detail' entry.id %}">SEE DETAILS</a></td>
+					<td>{{ entry.month }}</td>
+					<td>{{ entry.casestatus }}</td>
+					<td>{{ entry.filenumber }}</td>
+					<td>{{ entry.casetype }}</td>
+					<td>{{ entry.fullname }}</td>
+					<td>{{ entry.age }}</td>
+					<td>{{ entry.gender }}</td>
+					<td>{{ entry.nationality }}</td>
+					<td>{{ entry.phone }}</td>
+					<td>{{ entry.location }}</td>
+					<td>{{ entry.referralsource }}</td>
+
+				{% endfor %}
+			</table>
+		</div>
+	</div>
+</div>
+
+
+{% endblock content %}

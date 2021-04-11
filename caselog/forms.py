@@ -2,6 +2,8 @@ from django import forms
 
 from .models import *
 
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 
 class PSWorkerForm(forms.ModelForm):
     class Meta:
@@ -16,13 +18,12 @@ class PSWorkerForm(forms.ModelForm):
             'team',
         ]
 
-
-class CaseForm(forms.ModelForm):
+class PSWorkerForm2(forms.ModelForm):
     class Meta:
-        model = Case
-        fields = [
-            'filenum',
-        ]
+        model = PsWorker
+        fields = '__all__'
+        exclude = ['user']
+
 
 
 class MonthForm(forms.Form):
@@ -30,7 +31,7 @@ class MonthForm(forms.Form):
 
 
 class AddCaseForm(forms.Form):
-    filenum = forms.CharField(max_length=100)
+    filenumber = forms.CharField(max_length=100)
     casetype = forms.CharField(max_length=100)
     fullname = forms.CharField(max_length=100)
     age = forms.IntegerField()
@@ -41,7 +42,7 @@ class AddCaseForm(forms.Form):
 class AddLogEntryForm(forms.Form):
     month = forms.CharField(max_length=100)
     casestatus = forms.CharField(max_length=100)
-    filenum = forms.CharField(max_length=100)
+    filenumber = forms.CharField(max_length=100)
     casetype = forms.CharField(max_length=100)
     fullname = forms.CharField(max_length=100)
     age = forms.IntegerField()
@@ -56,3 +57,31 @@ class AddLogEntryForm(forms.Form):
 class FilterByMonthForm(forms.Form):
     month = forms.CharField(max_length=100)
 
+
+class LogEntryForm(forms.ModelForm):
+    class Meta:
+        model = LogEntry
+        fields = [
+            'month',
+            'casestatus',
+            'filenumber',
+            'casetype',
+            'fullname',
+            'age',
+            'gender',
+            'nationality',
+            'phone',
+            'location',
+            'referralsource',
+            'psworker', 
+        ]
+
+
+
+class CreateUserForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password1', 'password2']
+
+
+    

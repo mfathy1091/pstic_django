@@ -11,7 +11,7 @@
 
 	<div class="col-md-8">
 		<div class="card card-body">
-			<a class="btn btn-primary  btn-sm btn-block" href="{% url 'caselog-addworker' %}">Add PS Worker</a>
+			<a class="btn btn-primary  btn-sm btn-block" href="{% url 'addworker' %}">Add PS Worker</a>
 			<table class="table table-sm" >
 				<thead>
 					<tr>
@@ -54,10 +54,10 @@
 		<div class="card card-body">
 			<h5>Analysis</h5>
 			<hr>
-			<p>Target: 100 case</p>
-			<p>Acheived: 48</p>
+			<p>Target: ### case</p>
+			<p>Acheived: ###</p>
 			<hr>
-			<h2 style="text-align: center;padding: 10px">{{psworker_logentries_count}} %</h1>
+			<h2 style="text-align: center;padding: 10px">{{psworker_logentries_count}} ###%</h1>
 
 		</div>
 	</div>
@@ -72,7 +72,7 @@
 
 	<div class="col-md-8">
 		<div class="card card-body">
-			<a class="btn btn-primary  btn-sm btn-block" href="{% url 'caselog-addworker' %}">Add PS Worker</a>
+			<a class="btn btn-primary  btn-sm btn-block" href="{% url 'addworker' %}">Add PS Worker</a>
 			<table class="table table-sm" >
 				<thead>
 					<tr>
@@ -115,10 +115,10 @@
 		<div class="card card-body">
 			<h5>Analysis</h5>
 			<hr>
-			<p>Target: 1000 case</p>
-			<p>Acheived: 48</p>
+			<p>Target: ### case</p>
+			<p>Acheived: ###</p>
 			<hr>
-			<h2 style="text-align: center;padding: 10px">{{psworker_logentries_count}} %</h1>
+			<h2 style="text-align: center;padding: 10px">{{psworker_logentries_count}} ###%</h1>
 
 		</div>
 	</div>
@@ -137,7 +137,6 @@
 		<h5>ALL CASES:</h5>
 		<hr>
 		<div class="card card-body">
-			<a class="btn btn-primary  btn-sm btn-block" href="{% url 'caselog-addlogentry' %}">Add Case</a>
 			<table class="table table-sm" style="border-collapse:collapse; text-align: center;">
 				<tr>
 					<th>Month</th>
@@ -159,7 +158,7 @@
 				<tr>
 					<td>{{ entry.month }}</td>
 					<td>{{ entry.casestatus }}</td>
-					<td>{{ entry.case.filenum }}</td>
+					<td>{{ entry.filenumber }}</td>
 					<td>{{ entry.casetype }}</td>
 					<td>{{ entry.fullname }}</td>
 					<td>{{ entry.age }}</td>
@@ -169,13 +168,24 @@
 					<td>{{ entry.location }}</td>
 					<td>{{ entry.referralsource }}</td>
 					<td>{{ entry.psworker.fullname }}</td>
-					<td><a class="btn btn-sm btn-info" href="">Update</a></td>
-					<td><a class="btn btn-sm btn-danger" href="">Remove</a></td>
+					<td><a class="btn btn-sm btn-info" href="{% url 'updatelogentry' entry.id %}">Update</a></td>
+					<td><a class="btn btn-sm btn-danger" href="{% url 'deletelogentry' entry.id %}">Remove</a></td>
 				{% endfor %}
 			</table>
 		</div>
 	</div>
 
+</div>
+
+<div class="row">
+    <!-- cases statistics tables  -->
+    {% include 'caselog/statistics_cases.html' %}
+
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+        {% block statistics_cases_content %}
+
+        {% endblock %}
+    </main>
 </div>
 
 

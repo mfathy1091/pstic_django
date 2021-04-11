@@ -2,13 +2,22 @@ from django.shortcuts import render, redirect
 from django.views import View
 from .models import *
 from django.db import connection
-from .forms import *
+from .forms import CreateUserForm, LogEntryForm, PSWorkerForm, AddCaseForm, MonthForm, FilterByMonthForm, AddLogEntryForm, PSWorkerForm2
 from django.contrib import messages
 from django.http import HttpResponseRedirect
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
+from django.views.generic.detail import DetailView
+from django.views.generic.base import TemplateView
+from django.views.generic import UpdateView, DeleteView
+from django.views.generic.list import ListView
+from django.views.generic.edit import CreateView
 from datetime import datetime
-
-
+from .filters import LogEntryFilter
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from .decorators import unauthenticated_user, allowed_users, admin_only
+from django.contrib.auth.models import Group
 
 class PSWorkersView(TemplateView):
     template_name = 'caselog/workers.html'
@@ -41,7 +50,7 @@ class AddPsWorkerView(TemplateView):
         if addpsworker_form.is_valid():
             addpsworker_form.save()
             messages.success(request, ('Added Successfully'))
-            return redirect ('caselog-dashboard')
+            return redirect ('dashboard')
         else:
             # Retrieved fields
             fullname = request.POST['fullname']
@@ -116,7 +125,6 @@ class AddCaseView(TemplateView):
 
             messages.success(request, ('Added Successfully'))
             return render(request, self.template_name, context)
-            #return redirect ('caselog-cases')
         else:
             print(form.errors)
             filenum = request.POST['filenum']
@@ -142,7 +150,7 @@ class AddCaseView(TemplateView):
             }
         return render(request, self.template_name, contextAndRetriedvedFields)
 
-
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class CaseDetail(TemplateView):
     template_name = 'caselog/case_detail.html'
 
@@ -253,8 +261,7 @@ class LogEntriesView(TemplateView):
 
 
     template_name = 'caselog/logentries.html'
-    logentries = LogEntry.objects.prefetch_related('case')
-    cases = Case.objects.all().prefetch_related()
+    logentries = LogEntry.objects.prefetch_related('psworker')
     months = LogEntry.MONTH
     nationalities = LogEntry.NATIONALITY
     
@@ -356,112 +363,7 @@ class LogEntriesView(TemplateView):
                     'month_form': month_form,
                     'months': self.months,
                     }
-            return render(request, self.template_name, contextAndRetriedvedFields)
-
-    
-
-class AddLogEntry(TemplateView):
-    template_name = 'caselog/add_logentry.html'
-    cases = Case.objects.all()
-    casetypes = LogEntry.CASETYPE
-    casestatuses = LogEntry.CASESTATUS
-    months = LogEntry.MONTH
-    genders = LogEntry.GENDER
-    nationalities = LogEntry.NATIONALITY
-    locations = LogEntry.LOCATION
-    referralsources = LogEntry.REFERRALSOURCE
-    psworkers = PsWorker.objects.all()
-
-    def get(self, request):
-        context = {
-        'case': self.cases,
-        'casetypes': self.casetypes,
-        'casestatuses': self.casestatuses,
-        'months': self.months,
-        'genders': self.genders,
-        'nationalities': self.nationalities,
-        'locations': self.locations,
-        'referralsources': self.referralsources,
-        'psworkers': self.psworkers,
-        }
-        return render(request, self.template_name, context)
-
-    def post(self, request):
-        context = {
-        'case': self.cases,
-        'casetypes': self.casetypes,
-        'casestatuses': self.casestatuses,
-        'months': self.months,
-        'genders': self.genders,
-        'nationalities': self.nationalities,
-        'psworkers': self.psworkers,
-        }
-        form = AddLogEntryForm(request.POST)
-        print('FORM STATUS')
-        print(form.is_valid())
-        if form.is_valid():
-            # get fk objects selected from dropdowns fields
-            #month_obj = Month.objects.filter(id__exact=form.cleaned_data['month']).get()
-
-            # get values from input fields
-            month = form.cleaned_data.get('month')
-            casestatus = form.cleaned_data.get('casestatus')
-            casetype = form.cleaned_data.get('casetype')
-            filenum = form.cleaned_data['filenum']
-            age = form.cleaned_data['age']
-            fullname = form.cleaned_data.get('fullname')
-            gender = form.cleaned_data.get('gender')
-            nationlaity = form.cleaned_data.get('nationality')
-            phone = form.cleaned_data.get('phone')
-            location = form.cleaned_data.get('location')
-            referralsource = form.cleaned_data.get('referralsource')
-            psworkerid = form.cleaned_data.get('psworker')
-
-
-            # get pk of foreing tables
-            psworker_obj = PsWorker.objects.filter(id__exact=psworkerid).get()
-
-            # 1) create, fill, and save CaseObject then LogEntry Object            
-            case_obj = Case(filenum= filenum)
-            case_obj.save()
-            
-
-
-            logentry_obj = LogEntry(case=case_obj, casestatus= casestatus, month= month, casetype=casetype, age= age, fullname= fullname, gender=gender, nationality=nationlaity, phone=phone, location=location, referralsource=referralsource, psworker=psworker_obj)
-            logentry_obj.save()
-
-            messages.success(request, ('Added Successfully'))
-            return render(request, self.template_name, context)
-            #return redirect ('caselog-cases')
-        else:
-            print(form.errors)
-            filenum = request.POST['filenum']
-            fullname = request.POST['fullname']
-            age = request.POST['age']
-            phone = request.POST['phone']
-            #gender = request.POST['gender']
-            #nationality = request.POST['nationality']
-            #addpsworker_form = PSWorkerForm(request.POST) # refills the form if you instatioated the form naem in html form tag and removed the hard coded form
-            
-            messages.success(request, ('There was an error'))
-
-            contextAndRetriedvedFields = {
-            'case': self.cases,
-            'casestatuses': self.casestatuses,
-            'casetypes': self.casetypes,
-            'months': self.months,
-            'genders': self.genders,
-            'nationalities': self.nationalities,
-            'locations': self.locations,
-            'referralsources': self.referralsources,
-            'psworkers': self.psworkers,
-            
-            'filenum': filenum,
-            'fullname': fullname,
-            'age': age,
-            }
-        return render(request, self.template_name, contextAndRetriedvedFields)
-            
+            return render(request, self.template_name, contextAndRetriedvedFields)      
 
 
 def beneficiaries(request):
@@ -481,8 +383,9 @@ def beneficiaries(request):
 
 class Queries():
     allpsworkers = PsWorker.objects.all()
+    allcases = Case.objects.all()
 
-    alllogentries = LogEntry.objects.prefetch_related('case', 'psworker')
+    alllogentries = LogEntry.objects.prefetch_related('psworker')
     nc_entries = alllogentries.filter(psworker__team='NC')
     cairo_entries = alllogentries.filter(psworker__team='Cairo')
     
@@ -490,16 +393,18 @@ class Queries():
     cairopsworkers = PsWorker.objects.filter(team__exact="Cairo")
 
     
-    #cairoentries = LogEntry.objects.prefetch_related('case', 'psworker').filter(psworker.team__exact="Cairo")
+#@login_required(login_url='login')
+#@allowed_users(allowed_roles=['admin'])
+#@admin_only
 
-
-
-
-
-class Dashboard(TemplateView):
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(admin_only, name='dispatch')
+class Dashboard(TemplateView): 
     template_name = 'caselog/dashboard.html'
 
-
+    
+    
+    #@login_required(login_url='login')
     def getWorkersStats(self, query):
         workers_stats_list =[]
         workers_query = query
@@ -531,37 +436,104 @@ class Dashboard(TemplateView):
 
 
     def get(self, request):
-        
-        entries_month = LogEntry.objects.prefetch_related('case', 'psworker').filter(month__exact='April')
+        query_statistics_cases_body = "SELECT \
+            logentry.id, \
+            logentry.nationality,\
+            COUNT(logentry.id) AS total, \
+            sum(case when logentry.age > 0 AND logentry.age <= 5 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_0_5_M, \
+            sum(case when logentry.age > 0 AND logentry.age <= 5 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_0_5_F, \
+            sum(case when logentry.age >= 6 AND logentry.age <= 9 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_6_9_M, \
+            sum(case when logentry.age >= 6 AND logentry.age <= 9 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_6_9_F, \
+            sum(case when logentry.age >= 10 AND logentry.age <= 14 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_10_14_M, \
+            sum(case when logentry.age >= 10 AND logentry.age <= 14 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_10_14_F, \
+            sum(case when logentry.age >= 15 AND logentry.age <= 17 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_15_17_M, \
+            sum(case when logentry.age >= 15 AND logentry.age <= 17 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_15_17_F, \
+            sum(case when logentry.age >= 18 AND logentry.age <= 24 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_18_24_M, \
+            sum(case when logentry.age >= 18 AND logentry.age <= 24 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_18_24_F, \
+            sum(case when logentry.age >= 25 AND logentry.age <= 49 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_25_49_M, \
+            sum(case when logentry.age >= 25 AND logentry.age <= 49 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_25_49_F, \
+            sum(case when logentry.age >= 50 AND logentry.age <= 59 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_50_59_M, \
+            sum(case when logentry.age >= 50 AND logentry.age <= 59 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_50_59_F, \
+            sum(case when logentry.age >= 60 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_gt60_M, \
+            sum(case when logentry.age >= 60 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_gt60_F \
+        FROM caselog_logentry AS logentry"
+
+        query_statistics_cases_totals_row = "UNION \
+            SELECT \
+                logentry.id, \
+                \"TOTAL\", \
+                COUNT(logentry.id) AS total, \
+                sum(case when logentry.age > 0 AND logentry.age <= 5 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_0_5_M, \
+                sum(case when logentry.age > 0 AND logentry.age <= 5 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_0_5_F, \
+                sum(case when logentry.age >= 6 AND logentry.age <= 9 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_6_9_M, \
+                sum(case when logentry.age >= 6 AND logentry.age <= 9 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_6_9_F, \
+                sum(case when logentry.age >= 10 AND logentry.age <= 14 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_10_14_M, \
+                sum(case when logentry.age >= 10 AND logentry.age <= 14 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_10_14_F, \
+                sum(case when logentry.age >= 15 AND logentry.age <= 17 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_15_17_M, \
+                sum(case when logentry.age >= 15 AND logentry.age <= 17 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_15_17_F, \
+                sum(case when logentry.age >= 18 AND logentry.age <= 24 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_18_24_M, \
+                sum(case when logentry.age >= 18 AND logentry.age <= 24 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_18_24_F, \
+                sum(case when logentry.age >= 25 AND logentry.age <= 49 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_25_49_M, \
+                sum(case when logentry.age >= 25 AND logentry.age <= 49 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_25_49_F, \
+                sum(case when logentry.age >= 50 AND logentry.age <= 59 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_50_59_M, \
+                sum(case when logentry.age >= 50 AND logentry.age <= 59 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_50_59_F, \
+                sum(case when logentry.age >= 60 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_gt60_M, \
+                sum(case when logentry.age >= 60 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_gt60_F \
+            FROM caselog_logentry AS logentry"
+
+        query_statistics_new_cases = query_statistics_cases_body + " WHERE \
+            logentry.casestatus = 'New' \
+            GROUP BY nationality " + query_statistics_cases_totals_row + " WHERE \
+            logentry.casestatus = 'New'"
+
+        query_statistics_active_cases = query_statistics_cases_body + " WHERE \
+            logentry.casestatus = 'New' OR logentry.casestatus = 'Active' \
+            GROUP BY nationality " + query_statistics_cases_totals_row + " WHERE \
+            logentry.casestatus = 'New' OR logentry.casestatus = 'Active'"
+
+        rs_newstats = LogEntry.objects.raw(query_statistics_new_cases)
+        rs_activestats = LogEntry.objects.raw(query_statistics_active_cases)
+
+        allpsworkers = PsWorker.objects.all()
+        alllogentries = LogEntry.objects.prefetch_related('psworker')
+
+        entries_month = LogEntry.objects.prefetch_related('psworker').filter(month__exact='April')
         total_cases_month = entries_month.count()
         #new = entries_month.filter(casestatus='New').count()
         #ongoing = entries_month.filter(casestatus='Ongoing').count()
+        nc_entries = alllogentries.filter(psworker__team='NC')
+        cairo_entries = alllogentries.filter(psworker__team='Cairo')
         
+        ncpsworkers = PsWorker.objects.filter(team__exact="NC")
+        cairopsworkers = PsWorker.objects.filter(team__exact="Cairo")
+
         # Alex
-        stats_nc_workers = self.getWorkersStats(Queries.ncpsworkers)
-        stats_nc_entriestotal = self.getTotalStats(Queries.nc_entries)
+        stats_nc_workers = self.getWorkersStats(ncpsworkers)
+        stats_nc_entriestotal = self.getTotalStats(nc_entries)
         
         # Cairo
-        stats_cairo_workers = self.getWorkersStats(Queries.cairopsworkers)
-        stats_cairo_entriestotal = self.getTotalStats(Queries.cairo_entries)
+        stats_cairo_workers = self.getWorkersStats(cairopsworkers)
+        stats_cairo_entriestotal = self.getTotalStats(cairo_entries)
 
         context = {
-            'allpsworkers': Queries.allpsworkers,
+            'allpsworkers': allpsworkers,
             'total_cases_month': total_cases_month,
             #'new': new,
             #'ongoing': ongoing,
-            'allentries': Queries.alllogentries,
+            'allentries': alllogentries,
             'stats_nc_workers':stats_nc_workers,
             'stats_nc_entriestotal':stats_nc_entriestotal,
             'stats_cairo_entriestotal': stats_cairo_entriestotal,
             'stats_cairo_workers':stats_cairo_workers,
+            'newstats': rs_newstats,
+            'activestats': rs_activestats,
         }
 
         return render(request, self.template_name, context)
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class PsWorkerView(TemplateView):
     template_name = 'caselog/psworker.html'
-    #logentries = LogEntry.objects.prefetch_related('case')
     cases = Case.objects.all().prefetch_related()
     months = LogEntry.MONTH
     nationalities = LogEntry.NATIONALITY
@@ -571,61 +543,45 @@ class PsWorkerView(TemplateView):
         psworker_logentries = psworker.logentry_set.all()
         psworker_logentries_count = psworker_logentries.count()
 
+        myFilter = LogEntryFilter(request.GET, queryset=psworker_logentries)
+        psworker_logentries = myFilter.qs
+
         context={
             'psworker': psworker,
             'psworker_logentries': psworker_logentries,
             'psworker_logentries_count': psworker_logentries_count,
             'months': self.months,
             'selectedmonth': 'All',
+            'myFilter': myFilter,
         }
 
         return render(request, self.template_name, context)
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class AddLogEntry(TemplateView):
+    template_name = 'caselog/logentry_form.html'
 
-        
-class UpdateLogEntry(TemplateView):
-    template_name = 'caselog/add_logentry.html'
-    cases = Case.objects.all()
-    casetypes = LogEntry.CASETYPE
-    casestatuses = LogEntry.CASESTATUS
-    months = LogEntry.MONTH
-    genders = LogEntry.GENDER
-    nationalities = LogEntry.NATIONALITY
-    locations = LogEntry.LOCATION
-    referralsources = LogEntry.REFERRALSOURCE
-    psworkers = PsWorker.objects.all()
 
-    def get(self, request, pk):
-        context = {
-        'case': self.cases,
-        'casetypes': self.casetypes,
-        'casestatuses': self.casestatuses,
-        'months': self.months,
-        'genders': self.genders,
-        'nationalities': self.nationalities,
-        'locations': self.locations,
-        'referralsources': self.referralsources,
-        'psworkers': self.psworkers,
+    context = {
+        'case': Queries.allcases,
+        'casetypes': LogEntry.CASETYPE,
+        'casestatuses': LogEntry.CASESTATUS,
+        'months': LogEntry.MONTH,
+        'genders': LogEntry.GENDER,
+        'nationalities': LogEntry.NATIONALITY,
+        'locations': LogEntry.LOCATION,
+        'referralsources': LogEntry.REFERRALSOURCE,
+        'psworkers': Queries.allpsworkers,
         }
-        return render(request, self.template_name, context)
+
+    def get(self, request):
+        return render(request, self.template_name, self.context)
 
     def post(self, request):
-        context = {
-        'case': self.cases,
-        'casetypes': self.casetypes,
-        'casestatuses': self.casestatuses,
-        'months': self.months,
-        'genders': self.genders,
-        'nationalities': self.nationalities,
-        'psworkers': self.psworkers,
-        }
         form = AddLogEntryForm(request.POST)
         print('FORM STATUS')
         print(form.is_valid())
         if form.is_valid():
-            # get fk objects selected from dropdowns fields
-            #month_obj = Month.objects.filter(id__exact=form.cleaned_data['month']).get()
-
             # get values from input fields
             month = form.cleaned_data.get('month')
             casestatus = form.cleaned_data.get('casestatus')
@@ -638,43 +594,246 @@ class UpdateLogEntry(TemplateView):
             phone = form.cleaned_data.get('phone')
             location = form.cleaned_data.get('location')
             referralsource = form.cleaned_data.get('referralsource')
+            psworkerid = form.cleaned_data.get('psworker')
+
+
+            # get pk of foreing tables
+            psworker_obj = PsWorker.objects.filter(id__exact=psworkerid).get()
 
             # 1) create, fill, and save CaseObject then LogEntry Object            
             case_obj = Case(filenum= filenum)
             case_obj.save()
             
-            logentry_obj = LogEntry(case=case_obj, casestatus= casestatus, month= month, casetype=casetype, age= age, fullname= fullname, gender=gender, nationality=nationlaity, phone=phone, location=location, referralsource=referralsource)
+            logentry_obj = LogEntry(case=case_obj, casestatus= casestatus, month= month, casetype=casetype, age= age, fullname= fullname, gender=gender, nationality=nationlaity, phone=phone, location=location, referralsource=referralsource, psworker=psworker_obj)
             logentry_obj.save()
 
             messages.success(request, ('Added Successfully'))
-            return render(request, self.template_name, context)
-            #return redirect ('caselog-cases')
+            return render(request, self.template_name, self.context)
+            #return redirect ('cases')
         else:
             print(form.errors)
             filenum = request.POST['filenum']
             fullname = request.POST['fullname']
             age = request.POST['age']
             phone = request.POST['phone']
-            #gender = request.POST['gender']
-            #nationality = request.POST['nationality']
-            #addpsworker_form = PSWorkerForm(request.POST) # refills the form if you instatioated the form naem in html form tag and removed the hard coded form
-            
+
             messages.success(request, ('There was an error'))
 
-            contextAndRetriedvedFields = {
-            'case': self.cases,
-            'casetypes': self.casetypes,
-            'months': self.months,
-            'genders': self.genders,
-            'nationalities': self.nationalities,
-            'locations': self.locations,
-            'referralsources': self.referralsources,
-            'psworkers': self.psworkers,
-            
+            RetriedvedFields = {
             'filenum': filenum,
             'fullname': fullname,
             'age': age,
             }
-        return render(request, self.template_name, contextAndRetriedvedFields)
-            
+            contextAndRetriedvedFields = self.context.copy()
+            contextAndRetriedvedFields.update(RetriedvedFields)
 
+        return render(request, self.template_name, contextAndRetriedvedFields)
+      
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class CreateLogEntry(CreateView):
+    template_name = 'caselog/create_logentry.html'
+    form_class = LogEntryForm
+    queryset = LogEntry.objects.all()
+    success_url = '/caselog/'
+
+@login_required(login_url='login')
+def createLogEntry_general(request):
+    form = LogEntryForm()
+    if request.method == 'POST':
+        #print('Priniting POST', request.POST)
+        form = LogEntryForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/caselog')
+    context = {'form': form}
+    return render(request, 'caselog/logentry_form.html', context)
+
+@login_required(login_url='login')
+def createLogEntry(request, pk):
+    psworker = PsWorker.objects.get(id=pk)
+    form = LogEntryForm(initial={'psworker':psworker})
+    if request.method == 'POST':
+        #print('Priniting POST', request.POST)
+        form = LogEntryForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/caselog')
+    context = {'form': form}
+    return render(request, 'caselog/logentry_form.html', context)
+
+@login_required(login_url='login')
+def updateLogEntry(request, pk):
+    entry = LogEntry.objects.get(id=pk)
+    form = LogEntryForm(instance=entry)
+    if request.method == 'POST':
+        form = LogEntryForm(request.POST, instance=entry)
+        if form.is_valid():
+            form.save()
+            return redirect('/caselog')
+
+    context = {'form': form}
+    return render(request, 'caselog/logentry_form.html', context)
+
+@login_required(login_url='login')
+def deleteLogEntry(request, pk):
+    entry = LogEntry.objects.get(id=pk)
+    if request.method == 'POST':
+        entry.delete()
+        return redirect('/caselog')
+    context = {'item': entry}
+    return render(request, 'caselog/delete_logentry.html', context)
+
+@unauthenticated_user
+def registerPage(request):
+    form = CreateUserForm()
+    if request.method == 'POST':
+        form = CreateUserForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            username = form.cleaned_data.get('username')
+
+            group = Group.objects.get(name = 'psworker')
+            user.groups.add(group)
+            PsWorker.objects.create(
+                user=user,
+            )
+
+            messages.success(request, 'Account was created for ' + username)
+            return redirect('login')
+
+    context = {'form': form,}
+    return render(request, 'caselog/register.html', context)
+
+@unauthenticated_user
+def loginPage(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect('dashboard')
+        else:
+            messages.info(request, 'Username OR password is incorrect')
+
+    context = {}
+    return render(request, 'caselog/login.html', context)
+
+
+def logoutUser(request):
+    logout(request)
+    return redirect('login')
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(allowed_users(allowed_roles=['psworker']), name='dispatch')
+class UserPage(TemplateView):
+    template_name = 'caselog/user.html'
+
+
+
+    def get(self, request):
+
+        query_statistics_cases_body = "SELECT \
+            logentry.id, \
+            logentry.nationality,\
+            COUNT(logentry.id) AS total, \
+            sum(case when logentry.age > 0 AND logentry.age <= 5 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_0_5_M, \
+            sum(case when logentry.age > 0 AND logentry.age <= 5 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_0_5_F, \
+            sum(case when logentry.age >= 6 AND logentry.age <= 9 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_6_9_M, \
+            sum(case when logentry.age >= 6 AND logentry.age <= 9 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_6_9_F, \
+            sum(case when logentry.age >= 10 AND logentry.age <= 14 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_10_14_M, \
+            sum(case when logentry.age >= 10 AND logentry.age <= 14 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_10_14_F, \
+            sum(case when logentry.age >= 15 AND logentry.age <= 17 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_15_17_M, \
+            sum(case when logentry.age >= 15 AND logentry.age <= 17 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_15_17_F, \
+            sum(case when logentry.age >= 18 AND logentry.age <= 24 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_18_24_M, \
+            sum(case when logentry.age >= 18 AND logentry.age <= 24 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_18_24_F, \
+            sum(case when logentry.age >= 25 AND logentry.age <= 49 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_25_49_M, \
+            sum(case when logentry.age >= 25 AND logentry.age <= 49 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_25_49_F, \
+            sum(case when logentry.age >= 50 AND logentry.age <= 59 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_50_59_M, \
+            sum(case when logentry.age >= 50 AND logentry.age <= 59 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_50_59_F, \
+            sum(case when logentry.age >= 60 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_gt60_M, \
+            sum(case when logentry.age >= 60 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_gt60_F \
+        FROM caselog_logentry AS logentry"
+
+        query_statistics_cases_totals_row = "UNION \
+            SELECT \
+                logentry.id, \
+                \"TOTAL\", \
+                COUNT(logentry.id) AS total, \
+                sum(case when logentry.age > 0 AND logentry.age <= 5 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_0_5_M, \
+                sum(case when logentry.age > 0 AND logentry.age <= 5 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_0_5_F, \
+                sum(case when logentry.age >= 6 AND logentry.age <= 9 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_6_9_M, \
+                sum(case when logentry.age >= 6 AND logentry.age <= 9 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_6_9_F, \
+                sum(case when logentry.age >= 10 AND logentry.age <= 14 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_10_14_M, \
+                sum(case when logentry.age >= 10 AND logentry.age <= 14 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_10_14_F, \
+                sum(case when logentry.age >= 15 AND logentry.age <= 17 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_15_17_M, \
+                sum(case when logentry.age >= 15 AND logentry.age <= 17 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_15_17_F, \
+                sum(case when logentry.age >= 18 AND logentry.age <= 24 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_18_24_M, \
+                sum(case when logentry.age >= 18 AND logentry.age <= 24 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_18_24_F, \
+                sum(case when logentry.age >= 25 AND logentry.age <= 49 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_25_49_M, \
+                sum(case when logentry.age >= 25 AND logentry.age <= 49 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_25_49_F, \
+                sum(case when logentry.age >= 50 AND logentry.age <= 59 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_50_59_M, \
+                sum(case when logentry.age >= 50 AND logentry.age <= 59 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_50_59_F, \
+                sum(case when logentry.age >= 60 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_gt60_M, \
+                sum(case when logentry.age >= 60 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_gt60_F \
+            FROM caselog_logentry AS logentry"
+
+        query_statistics_new_cases = query_statistics_cases_body + " WHERE \
+            logentry.month = 'January' AND logentry.casestatus = 'New' \
+            GROUP BY nationality " + query_statistics_cases_totals_row + " WHERE \
+            logentry.month = 'January' AND logentry.casestatus = 'New'"
+
+        query_statistics_active_cases = query_statistics_cases_body + " WHERE \
+            logentry.month = 'January' AND (logentry.casestatus = 'New' OR logentry.casestatus = 'Active') \
+            GROUP BY nationality " + query_statistics_cases_totals_row + " WHERE \
+            logentry.month = 'January' AND (logentry.casestatus = 'New' OR logentry.casestatus = 'Active')"
+
+        rs_newstats = LogEntry.objects.raw(query_statistics_new_cases)
+        rs_activestats = LogEntry.objects.raw(query_statistics_active_cases)
+
+        months = LogEntry.MONTH
+        nationalities = LogEntry.NATIONALITY
+        entries = request.user.psworker.logentry_set.all()
+        print('WORKER:', request.user.psworker)
+        print('ENTRIES:', entries)
+        
+        context = {
+            'entries': entries,
+            'newstats': rs_newstats,
+            'activestats': rs_activestats,
+            }
+        return render(request, self.template_name, context)
+
+
+
+
+""" @login_required(login_url='login')
+@allowed_users(allowed_roles=['psworker'])
+def userPage(request):
+    entries = request.user.psworker.logentry_set.all()
+    print('ENTRIES:', entries)
+    
+    context = {
+        'entries': entries,
+        }
+    return render(request, 'caselog/user.html', context)
+"""
+
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['psworker'])
+def accountSettings(request):
+	psworker = request.user.psworker
+	form = PSWorkerForm2(instance=psworker)
+
+	if request.method == 'POST':
+		form = PSWorkerForm2(request.POST, request.FILES,instance=psworker)
+		if form.is_valid():
+			form.save()
+
+
+	context = {'form':form}
+	return render(request, 'caselog/account_settings.html', context)

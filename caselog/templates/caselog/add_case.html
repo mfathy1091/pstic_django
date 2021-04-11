@@ -3,7 +3,7 @@
 {% block content %}
   <h1>Add Case</h1>
 
-  <form method="POST" action="{% url 'caselog-addcase' %}">
+  <form method="POST" action="{% url 'addcase' %}">
     {% csrf_token %}
     
     <div class="form-group">
