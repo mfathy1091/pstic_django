@@ -52,7 +52,7 @@
     <div class="col-md">
       <div class="card card-body">
 
-        <h5># of Indirect Beneficiaries: {{ count }}<h5>
+        <h5># of Indirect Beneficiaries: {{  }}<h5>
           <a class="btn btn-primary  btn-sm btn-block" href="">ADD INDIRECT BENEFICIARY</a>
           <table class="table table-light table-sm">
               <thead>
@@ -65,12 +65,12 @@
                   </tr>
               </thead>
               <tbody>
-                {% for benef in selectedIndirectBenefs %}
+                {% %}
                     <tr>
-                      <td>{{ benef.fullname }}</td>
-                      <td>{{ benef.age }}</td>
-                      <td>{{ benef.gender }}</td>
-                      <td>{{ benef.nationality }}</td>
+                      <td>{{  }}</td>
+                      <td>{{ }}</td>
+                      <td>{{ }}</td>
+                      <td>{{ }}</td>
                     </tr>
                   {% endfor %}
               </tbody>
