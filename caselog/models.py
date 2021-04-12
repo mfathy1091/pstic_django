@@ -52,6 +52,8 @@ class Case(models.Model):
     def __str__(self):
         return self.filenum
 
+
+
 class IndirectBenef(models.Model):
     GENDER = (
         ('Male', 'Male'),
@@ -161,6 +163,8 @@ class LogEntry(models.Model):
     location = models.CharField(max_length=50, null=True, choices=LOCATION)
     referralsource = models.CharField(max_length=200, null=True, choices=REFERRALSOURCE)
     psworker = models.ForeignKey(PsWorker, null=True, on_delete=models.SET_NULL)
+    indirectbenefs = models.ForeignKey(IndirectBenef, null=True, on_delete=models.SET_NULL)
+
     
     def __str__(self):
         return self.filenumber
