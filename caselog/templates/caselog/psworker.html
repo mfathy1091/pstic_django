@@ -102,7 +102,7 @@
 				</tr>
 				{% for entry in psworker_logentries %}
 				<tr>
-					<td><a href="{% url 'case-detail' entry.id %}">SEE DETAILS</a></td>
+					<td><a class="btn btn-sm btn-success" href="{% url 'case-detail' entry.id %}">MORE DETAILS</a></td>
 					<td>{{ entry.month }}</td>
 					<td>{{ entry.casestatus }}</td>
 					<td>{{ entry.filenumber }}</td>

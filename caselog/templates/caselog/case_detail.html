@@ -53,7 +53,7 @@
       <div class="card card-body">
 
         <h5># of Indirect Beneficiaries: {{ count }}<h5>
-          <table class="table table-dark table-sm">
+          <table class="table table-light table-sm">
               <thead>
                   <tr>
                       <th>Full Name</th>
@@ -74,7 +74,8 @@
                   {% endfor %}
               </tbody>
           </table>
-
+          <br>
+          <br>
       </div>
     </div>
   </div>  
@@ -93,12 +94,13 @@
           <h5>VISITS</h5>
           <hr>
          
-          <table class="table table-dark table-sm">
+          <table class="table table-light table-sm">
             <thead>
                 <tr>
                     <th>Visit Date</th>
                     <th>Comment</th>
                 </tr>
+                
             </thead>
             <tbody>
                 {% for visit in visits %}
@@ -109,6 +111,8 @@
                   {% endfor %}
             </tbody>
           </table>
+          <br>
+          <br>
         </div>
       </div>
     </div>
