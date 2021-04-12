@@ -78,11 +78,15 @@ class IndirectBenef(models.Model):
     age = models.IntegerField()
     gender = models.CharField(max_length=200, null=True, choices=GENDER)
     nationality = models.CharField(max_length=200, null=True, choices=NATIONALITY)
-    case = models.ForeignKey(Case, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.fullname
 
+
+
+class Visit(models.Model):
+    visitdate = models.CharField(max_length=200, null=True)
+    comment = models.CharField(max_length=1000, null=True)
 
 class LogEntry(models.Model):
     MONTH = (
@@ -164,6 +168,7 @@ class LogEntry(models.Model):
     referralsource = models.CharField(max_length=200, null=True, choices=REFERRALSOURCE)
     psworker = models.ForeignKey(PsWorker, null=True, on_delete=models.SET_NULL)
     indirectbenefs = models.ForeignKey(IndirectBenef, null=True, on_delete=models.SET_NULL)
+    visits = models.ForeignKey(Visit, null=True, on_delete=models.SET_NULL)
 
     
     def __str__(self):
