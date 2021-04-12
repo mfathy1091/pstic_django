@@ -156,16 +156,16 @@ class CaseDetail(TemplateView):
 
     def get(self, request, pk, *args, **kwargs):
         selectedlogentry_obj = LogEntry.objects.filter(id__exact=pk).get()
-        selectedIndirectBenefs_qs = IndirectBenef.objects.filter(case_id__exact=selectedlogentry_obj.case)
-        count = selectedIndirectBenefs_qs.count()
+        #selectedIndirectBenefs_qs = IndirectBenef.objects.filter(case_id__exact=selectedlogentry_obj.case)
+        #count = selectedIndirectBenefs_qs.count()
 
         print(selectedlogentry_obj)
         
 
         context = {
                     'selectedlogentry': selectedlogentry_obj,
-                    'selectedIndirectBenefs': selectedIndirectBenefs_qs,
-                    'count': count,
+                    #'selectedIndirectBenefs': selectedIndirectBenefs_qs,
+                    #'count': count,
                     }
         return render(request, self.template_name, context)
 
