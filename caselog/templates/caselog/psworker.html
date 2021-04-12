@@ -22,24 +22,19 @@
 			<h1 style="text-align: center;padding: 10px">{{psworker_logentries_count}}</h1>
 		</div>
 	</div>
-</div>
 
-
-<br>
-<div class="row">
-	<div class="col">
-		<div class="card card-body">
-			<form method="get">
-				{{myFilter.form.as_p}}
-		    <button class="btn btn-primary" type="submit">Search</button>
-		  </form>
-
-
+		<div class="col-md">
+			<div class="card card-body">
+			<h5>FILTER</h5>
+			<hr>
+				<form method="get">
+					{{myFilter.form.as_p}}
+				<button class="btn btn-primary btn-sm btn-block" type="submit">Filter</button>
+			  </form>
+			</div>
 		</div>
-	</div>
-	
 </div>
-<br>
+
 <!--
 <div class="dropdown">
 	<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
@@ -84,6 +79,8 @@
 
 <div class="row">
 	<div class="col-md">
+		<h5>CASES DETAILS:</h5>
+		<hr>
 		<div class="card card-body">
 			<a class="btn btn-primary  btn-lg btn-block" href="{% url 'createlogentry' psworker.id %}">ADD CASE</a>
 			<table class="table table-sm" style="border-collapse:collapse; text-align: center;">

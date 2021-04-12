@@ -9,6 +9,6 @@ class LogEntryFilter(django_filters.FilterSet):
     #note = CharFilter(field_name="note", lookup_expr='icontains')
     class Meta:
         model = LogEntry
-        fields = '__all__'
-        exclude = ['psworker', 'age', 'location', 'phone']
-        #fields = ['month',]
+        #fields = '__all__'
+        fields = ['month', 'filenumber', 'casestatus']
+        #exclude = ['psworker', 'age', 'location', 'phone']

@@ -40,6 +40,7 @@ class AddCaseForm(forms.Form):
     month = forms.CharField(max_length=100)
 
 class AddLogEntryForm(forms.Form):
+    # month = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class' : ' dropdown-toggle'}))
     month = forms.CharField(max_length=100)
     casestatus = forms.CharField(max_length=100)
     filenumber = forms.CharField(max_length=100)
