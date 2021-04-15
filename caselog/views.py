@@ -2,14 +2,14 @@ from django.shortcuts import render, redirect
 from django.views import View
 from .models import *
 from django.db import connection
-from .forms import CreateUserForm, LogEntryForm, PSWorkerForm, AddCaseForm, MonthForm, FilterByMonthForm, AddLogEntryForm, PSWorkerForm2
+from .forms import CreateUserForm, LogEntryForm, PSWorkerForm, AddCaseForm, MonthForm, FilterByMonthForm, AddLogEntryForm, PSWorkerForm2, VisitForm
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.views.generic.detail import DetailView
 from django.views.generic.base import TemplateView
 from django.views.generic import UpdateView, DeleteView
 from django.views.generic.list import ListView
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, FormView
 from datetime import datetime
 from .filters import LogEntryFilter
 from django.contrib.auth.forms import UserCreationForm
@@ -150,24 +150,6 @@ class AddCaseView(TemplateView):
             }
         return render(request, self.template_name, contextAndRetriedvedFields)
 
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class CaseDetail(TemplateView):
-    template_name = 'caselog/case_detail.html'
-
-    def get(self, request, pk, *args, **kwargs):
-        selectedlogentry_obj = LogEntry.objects.filter(id__exact=pk).get()
-        #selectedIndirectBenefs_qs = IndirectBenef.objects.filter(case_id__exact=selectedlogentry_obj.case)
-        #count = selectedIndirectBenefs_qs.count()
-
-        print(selectedlogentry_obj)
-        
-
-        context = {
-                    'selectedlogentry': selectedlogentry_obj,
-                    #'selectedIndirectBenefs': selectedIndirectBenefs_qs,
-                    #'count': count,
-                    }
-        return render(request, self.template_name, context)
 
 
 
@@ -629,37 +611,7 @@ class AddLogEntry(TemplateView):
 
         return render(request, self.template_name, contextAndRetriedvedFields)
       
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class CreateLogEntry(CreateView):
-    template_name = 'caselog/create_logentry.html'
-    form_class = LogEntryForm
-    queryset = LogEntry.objects.all()
-    success_url = '/caselog/'
 
-@login_required(login_url='login')
-def createLogEntry_general(request):
-    form = LogEntryForm()
-    if request.method == 'POST':
-        #print('Priniting POST', request.POST)
-        form = LogEntryForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('/caselog')
-    context = {'form': form}
-    return render(request, 'caselog/logentry_form.html', context)
-
-@login_required(login_url='login')
-def createLogEntry(request, pk):
-    psworker = PsWorker.objects.get(id=pk)
-    form = LogEntryForm(initial={'psworker':psworker})
-    if request.method == 'POST':
-        #print('Priniting POST', request.POST)
-        form = LogEntryForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('/caselog')
-    context = {'form': form}
-    return render(request, 'caselog/logentry_form.html', context)
 
 @login_required(login_url='login')
 def updateLogEntry(request, pk):
@@ -837,3 +789,88 @@ def accountSettings(request):
 
 	context = {'form':form}
 	return render(request, 'caselog/account_settings.html', context)
+
+
+
+""" @method_decorator(login_required(login_url='login'), name='dispatch')
+class CreateLogEntry(CreateView):
+    template_name = 'caselog/create_logentry.html'
+    form_class = LogEntryForm
+    queryset = LogEntry.objects.all()
+    success_url = '/caselog/' """
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class CreateLogEntry(TemplateView):
+    template_name = 'caselog/logentry_form.html'
+
+    def get(self, request, *args, **kwargs):
+        psworker = PsWorker.objects.get(id=kwargs['workerpk'])
+        form = LogEntryForm(initial={'psworker':kwargs['workerpk']})
+        context = {'form': form}
+        return render(request, self.template_name, context)
+
+
+    def post(self, request, *args, **kwargs):
+        workerpk = request.POST.get('psworker')
+        form = LogEntryForm(request.POST)
+        if form.is_valid():
+            form.save()
+            newlink = '/caselog/caselog/psworker/' + workerpk
+            return redirect(newlink) 
+        else:
+            context = {'form': form}
+            return render(request, self.template_name, context) 
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class AddVisit(TemplateView):
+    template_name = 'caselog/visit_form.html'
+
+    def get(self, request, *args, **kwargs):
+        print('OLD OLD', kwargs)
+        entry = LogEntry.objects.get(id=kwargs['entrypk'])
+        form = VisitForm(initial={'logentry':kwargs['entrypk']})
+        context = {'form': form}
+        return render(request, self.template_name, context)
+
+
+    def post(self, request, *args, **kwargs):
+        #print('PRINT', request.POST)
+        entrypk = request.POST.get('logentry')
+        form = VisitForm(request.POST)
+        print('FORM IS VALID: ', form.is_valid())
+        print('FORM ERRORS:', form.errors)
+        print('POST:', request.POST)
+        if form.is_valid():
+            form.save()
+            newlink = '/caselog/case/' + entrypk
+            return redirect(newlink) 
+        else:
+            entry = LogEntry.objects.get(id=kwargs['entrypk'])
+            context = {'form': form}
+            return render(request, self.template_name, context) 
+
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class CaseDetail(TemplateView):
+    template_name = 'caselog/case_detail.html'
+
+    def get(self, request, *args, **kwargs):
+        print('NEW NEW', kwargs)
+        selectedlogentry_obj = LogEntry.objects.get(id=kwargs['entrypk'])
+        entryvisits = Visit.objects.filter(logentry=kwargs['entrypk'])
+        #selectedIndirectBenefs_qs = IndirectBenef.objects.filter(case_id__exact=selectedlogentry_obj.case)
+        #count = selectedIndirectBenefs_qs.count()
+
+        print(selectedlogentry_obj)
+        
+
+        context = {
+                    'selectedlogentry': selectedlogentry_obj,
+                    'entryvisits': entryvisits,
+                    #'selectedIndirectBenefs': selectedIndirectBenefs_qs,
+                    #'count': count,
+                    }
+        return render(request, self.template_name, context)

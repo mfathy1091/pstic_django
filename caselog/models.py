@@ -54,39 +54,6 @@ class Case(models.Model):
 
 
 
-class IndirectBenef(models.Model):
-    GENDER = (
-        ('Male', 'Male'),
-        ('Female', 'Female'),
-    )
-    
-    NATIONALITY = (
-        ('Syria', 'Syria'),
-        ('Sudan', 'Sudan'),
-        ('S. Sudan', 'S. Sudan'),
-        ('Ethiopia', 'Ethiopia'),
-        ('Iraq', 'Iraq'),
-        ('Somalia', 'Somalia'),
-        ('Eritrea', 'Eritrea'),
-        ('Yemen', 'Yemen'),
-        ('Comoros', 'Comoros'),
-        ('Cameron', 'Cameron'),
-    )
-
-    id = models.AutoField(primary_key=True)
-    fullname = models.CharField(max_length=50)
-    age = models.IntegerField()
-    gender = models.CharField(max_length=200, null=True, choices=GENDER)
-    nationality = models.CharField(max_length=200, null=True, choices=NATIONALITY)
-
-    def __str__(self):
-        return self.fullname
-
-
-
-class Visit(models.Model):
-    visitdate = models.CharField(max_length=200, null=True)
-    comment = models.CharField(max_length=1000, null=True)
 
 class LogEntry(models.Model):
     MONTH = (
@@ -167,9 +134,45 @@ class LogEntry(models.Model):
     location = models.CharField(max_length=50, null=True, choices=LOCATION)
     referralsource = models.CharField(max_length=200, null=True, choices=REFERRALSOURCE)
     psworker = models.ForeignKey(PsWorker, null=True, on_delete=models.SET_NULL)
-    indirectbenefs = models.ForeignKey(IndirectBenef, null=True, on_delete=models.SET_NULL)
-    visits = models.ForeignKey(Visit, null=True, on_delete=models.SET_NULL)
 
     
     def __str__(self):
         return self.filenumber
+
+
+
+class IndirectBenef(models.Model):
+    GENDER = (
+        ('Male', 'Male'),
+        ('Female', 'Female'),
+    )
+    
+    NATIONALITY = (
+        ('Syria', 'Syria'),
+        ('Sudan', 'Sudan'),
+        ('S. Sudan', 'S. Sudan'),
+        ('Ethiopia', 'Ethiopia'),
+        ('Iraq', 'Iraq'),
+        ('Somalia', 'Somalia'),
+        ('Eritrea', 'Eritrea'),
+        ('Yemen', 'Yemen'),
+        ('Comoros', 'Comoros'),
+        ('Cameron', 'Cameron'),
+    )
+
+    id = models.AutoField(primary_key=True)
+    fullname = models.CharField(max_length=50)
+    age = models.IntegerField()
+    gender = models.CharField(max_length=200, null=True, choices=GENDER)
+    nationality = models.CharField(max_length=200, null=True, choices=NATIONALITY)
+    logentry = models.ForeignKey(LogEntry, null=True, on_delete=models.SET_NULL)
+
+    def __str__(self):
+        return self.fullname
+
+
+
+class Visit(models.Model):
+    visitdate = models.CharField(max_length=200, null=True)
+    comment = models.CharField(max_length=1000, null=True)
+    logentry = models.ForeignKey(LogEntry, null=True, on_delete=models.SET_NULL)

@@ -79,10 +79,45 @@ class LogEntryForm(forms.ModelForm):
 
 
 
+""" class VisitForm(forms.Form):
+    visitdate = forms.CharField(max_length=100)
+    comment = forms.CharField(
+                    widget=forms.Textarea(
+                        attrs={'class': 'form-control'}
+                    )
+    )
+    logentry = forms.CharField(
+                    widget=forms.TextInput(
+                        attrs={'class': 'form-control'}
+                        )
+    ) """
+
+
+
+class VisitForm(forms.ModelForm):
+    class Meta:
+        model = Visit
+
+        fields = [
+            'visitdate',
+            'comment',
+            'logentry',
+        ]
+
+        widgets = {
+            'visitdate': forms.TextInput(attrs={'class': 'form-control'}),
+            'comment': forms.Textarea(attrs={'class': 'form-control'}),
+            'logentry': forms.TextInput(attrs={'class': 'form-control'}),
+
+            #Textarea
+            #'placeholder': 'Select Option'
+        }
+
+
 class CreateUserForm(UserCreationForm):
     class Meta:
         model = User
         fields = ['username', 'email', 'password1', 'password2']
-
+ 
 
     
