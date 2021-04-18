@@ -422,7 +422,7 @@ class Dashboard(TemplateView):
             logentry.id, \
             logentry.nationality,\
             COUNT(logentry.id) AS total, \
-            sum(case when logentry.age > 0 AND logentry.age <= 5 AND lsdddogentry.gender = \'Male\' Then 1 else 0 end) As age_0_5_M, \
+            sum(case when logentry.age > 0 AND logentry.age <= 5 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_0_5_M, \
             sum(case when logentry.age > 0 AND logentry.age <= 5 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_0_5_F, \
             sum(case when logentry.age >= 6 AND logentry.age <= 9 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_6_9_M, \
             sum(case when logentry.age >= 6 AND logentry.age <= 9 AND logentry.gender = \'Female\' Then 1 else 0 end) As age_6_9_F, \
