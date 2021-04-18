@@ -93,10 +93,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'pstic_db',
-        'HOST': 'dbinstance.cuxlljg5rhwe.us-east-2.rds.amazonaws.com',
-        'PORT': '5439',
-        'USER': 'admin',
-        'PASSWORD': 'aVCfsADb9eZhH5Dx',
+        'HOST': '167.99.143.149',
+        'PORT': '3306',
+        'USER': 'mohamedsql',
+        'PASSWORD': 'mohamedSQL@1110',
     }
 }
 
