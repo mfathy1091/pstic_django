@@ -390,14 +390,38 @@ class Dashboard(TemplateView):
     def getWorkersStats(self, query):
         workers_stats_list =[]
         workers_query = query
+        all_entries = LogEntry.objects.select_related('psworker')
 
         for worker in workers_query:
-            entries = worker.logentry_set.prefetch_related('logentries')
-            jan_entries_count = entries.filter(month__exact = 'January').count()
-            feb_entries_count = entries.filter(month__exact = 'February').count()
-            mar_entries_count = entries.filter(month__exact = 'March').count()
-            apr_entries_count = entries.filter(month__exact = 'April').count()
-            
+            #entries = worker.logentry_set.prefetch_related()
+            entries = all_entries.filter(psworker=worker)
+            #entries = []
+            #for entry in all_entries:
+                #if entry.psworker == worker:
+                    #print(entry.psworker, entry.filenumber)
+                    #entries.append(entry)
+
+            jan_entries_count = 0
+            feb_entries_count = 0
+            mar_entries_count = 0
+            apr_entries_count = 0
+
+            for entry in entries:
+                if entry.month == 'January':
+                    jan_entries_count += 1
+                if entry.month == 'February':
+                    feb_entries_count += 1
+                if entry.month == 'March':
+                    mar_entries_count += 1
+                if entry.month == 'April':
+                    apr_entries_count += 1
+                
+ 
+            #jan_entries_count = entries.filter(month__exact = 'January').count()
+            #feb_entries_count = entries.filter(month__exact = 'February').count()
+            #mar_entries_count = entries.filter(month__exact = 'March').count()
+           # apr_entries_count = entries.filter(month__exact = 'April').count()
+
             workers_stats_list.append([worker.id, worker.fullname, jan_entries_count, feb_entries_count, mar_entries_count, apr_entries_count])
 
         return workers_stats_list

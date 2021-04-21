@@ -12,7 +12,7 @@ urlpatterns = [
     # path('', include('login_portal.urls')),
 
     path('cashbox/', include('cash_box.urls')),
-    path('caselog/', include('caselog.urls')),
+    path('', include('caselog.urls')),
     path('__debug__/', include(debug_toolbar.urls)),
 
     #path('', include('accounts.urls')),
