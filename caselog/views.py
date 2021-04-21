@@ -443,7 +443,7 @@ class Dashboard(TemplateView):
 
     def get(self, request):
         query_statistics_cases_body = "SELECT \
-            logentry.id, \
+            1 as id, \
             logentry.nationality,\
             COUNT(logentry.id) AS total, \
             sum(case when logentry.age > 0 AND logentry.age <= 5 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_0_5_M, \
@@ -466,7 +466,7 @@ class Dashboard(TemplateView):
 
         query_statistics_cases_totals_row = "UNION \
             SELECT \
-                logentry.id, \
+                1 as id, \
                 \"TOTAL\", \
                 COUNT(logentry.id) AS total, \
                 sum(case when logentry.age > 0 AND logentry.age <= 5 AND logentry.gender = \'Male\' Then 1 else 0 end) As age_0_5_M, \
