@@ -89,7 +89,7 @@ WSGI_APPLICATION = 'django_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-
+####
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
